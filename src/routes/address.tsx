@@ -114,7 +114,7 @@ function AddressPage() {
               <Input placeholder="Pincode" value={form.pincode} onChange={(v) => setForm({ ...form, pincode: v })} />
             </div>
             <button onClick={handleAdd} disabled={addAddressMutation.isPending}
-              className="w-full rounded-xl bg-secondary py-3 text-sm font-bold text-primary disabled:opacity-60">
+              className="w-full rounded-xl bg-secondary py-3 text-sm font-bold text-secondary-foreground disabled:opacity-60">
               {addAddressMutation.isPending ? "Saving…" : "Save address"}
             </button>
           </div>

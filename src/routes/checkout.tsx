@@ -45,7 +45,7 @@ function CheckoutPage() {
         <p className="text-2xl">🔐</p>
         <p className="text-base font-bold">Sign in to place your order</p>
         <p className="text-xs text-muted-foreground">Your cart is saved. Come back after signing in.</p>
-        <Link to="/auth" search={{ next: "/checkout" }} className="mt-4 rounded-full bg-secondary px-6 py-3 text-xs font-bold text-primary-foreground mustard-shadow">
+        <Link to="/auth" search={{ next: "/checkout" }} className="mt-4 rounded-full bg-secondary px-6 py-3 text-xs font-bold text-secondary-foreground mustard-shadow">
           Sign in to continue
         </Link>
       </div>
@@ -136,7 +136,7 @@ function CheckoutPage() {
 
       <div className="fixed inset-x-0 bottom-0 z-30 mx-auto flex w-full max-w-[480px] gap-3 border-t border-border bg-background p-4">
         <button onClick={handlePlace} disabled={placing || t.itemsCount === 0}
-          className="flex-1 rounded-2xl bg-secondary py-3.5 text-sm font-bold text-primary-foreground mustard-shadow disabled:opacity-60">
+          className="flex-1 rounded-2xl bg-secondary py-3.5 text-sm font-bold text-secondary-foreground mustard-shadow disabled:opacity-60">
           {placing ? "Placing order…" : `Place order · ₹${t.total}`}
         </button>
       </div>

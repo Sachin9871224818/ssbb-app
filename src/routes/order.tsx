@@ -43,7 +43,7 @@ function OrderPage() {
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 px-6 text-center">
         <p className="text-2xl">🔐</p>
         <p className="text-base font-bold">Sign in to view your orders</p>
-        <Link to="/auth" search={{ next: "/order" }} className="mt-4 rounded-full bg-secondary px-6 py-3 text-xs font-bold text-primary-foreground mustard-shadow">
+        <Link to="/auth" search={{ next: "/order" }} className="mt-4 rounded-full bg-secondary px-6 py-3 text-xs font-bold text-secondary-foreground mustard-shadow">
           Sign in
         </Link>
       </div>
@@ -196,7 +196,7 @@ function SingleOrder({ orderId }: { orderId: string }) {
           </div>
         )}
 
-        <Link to="/order" className="mt-6 block rounded-2xl bg-secondary py-3.5 text-center text-sm font-bold text-primary-foreground mustard-shadow">
+        <Link to="/order" className="mt-6 block rounded-2xl bg-secondary py-3.5 text-center text-sm font-bold text-secondary-foreground mustard-shadow">
           All orders
         </Link>
         <Link to="/" className="mt-2 block rounded-2xl border border-border bg-card py-3 text-center text-sm font-semibold">

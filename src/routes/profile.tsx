@@ -58,7 +58,7 @@ function ProfilePage() {
 
       <div className="px-4">
         {!user && (
-          <Link to="/auth" className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-secondary py-3.5 text-sm font-bold text-primary-foreground mustard-shadow">
+          <Link to="/auth" className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-secondary py-3.5 text-sm font-bold text-secondary-foreground mustard-shadow">
             Sign in / Create account
           </Link>
         )}
