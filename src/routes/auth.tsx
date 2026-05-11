@@ -2,8 +2,6 @@ import { createFileRoute, useNavigate, useSearch, Link } from "@tanstack/react-r
 import { useState } from "react";
 import { z } from "zod";
 import { Mail, Lock, User as UserIcon, Phone, MessageCircle } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 
@@ -16,7 +14,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
-  const { user } = useAuth();
+  const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const { next } = useSearch({ from: "/auth" });
   const [mode, setMode] = useState<"signin" | "signup">("signin");
@@ -35,33 +33,19 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email, password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`,
-            data: { full_name: name, phone },
-          },
-        });
-        if (error) throw error;
-        toast.success("Account created — check your inbox to verify.");
+        await signUp(name, email, password, phone || undefined);
+        toast.success("Account created! Welcome to Shri Shyam Bachat Bazaar.");
+        navigate({ to: (next as any) || "/" });
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        await signIn(email, password);
         toast.success("Welcome back!");
         navigate({ to: (next as any) || "/" });
       }
     } catch (e: any) {
-      toast.error(e.message || "Something went wrong");
+      toast.error(e?.response?.data?.message || e.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
-  };
-
-  const google = async () => {
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: `${window.location.origin}${next || "/"}` });
-    if (result.error) { toast.error("Google sign-in failed"); return; }
-    if (result.redirected) return;
-    navigate({ to: (next as any) || "/" });
   };
 
   return (
@@ -86,7 +70,7 @@ function AuthPage() {
 
           <button
             onClick={submit}
-            disabled={loading || !email || !password}
+            disabled={loading || !email || !password || (mode === "signup" && !name)}
             className="w-full rounded-2xl bg-primary py-3.5 text-sm font-bold text-primary-foreground mustard-shadow disabled:opacity-50"
           >
             {loading ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
@@ -97,12 +81,9 @@ function AuthPage() {
           <span className="h-px flex-1 bg-white/10" /> Or continue with <span className="h-px flex-1 bg-white/10" />
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          <button onClick={google} className="flex items-center justify-center gap-2 rounded-2xl bg-white py-3 text-sm font-bold text-secondary">
-            <span className="text-base">G</span> Google
-          </button>
+        <div className="grid grid-cols-1 gap-2">
           <a href="https://wa.me/919728640896" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 rounded-2xl bg-success py-3 text-sm font-bold text-success-foreground">
-            <MessageCircle className="h-4 w-4" /> WhatsApp
+            <MessageCircle className="h-4 w-4" /> Order via WhatsApp
           </a>
         </div>
 

@@ -1,0 +1,260 @@
+You are a senior full-stack engineer.  
+Project Name: Shri Shyam Bachat Bazaar  
+Frontend already exists and is deployed from Lovable/Replit.  
+Now build a production-ready backend API architecture and connect the frontend to real APIs.
+
+Goal:
+Convert the current grocery delivery frontend into a fully dynamic app using backend APIs, PostgreSQL database, authentication, cart system, address management, order placement, delivery slots, and admin-ready APIs.
+
+Tech Stack:
+- Backend: Node.js + Express.js
+- Database: PostgreSQL
+- ORM: Prisma
+- Auth: JWT
+- API Style: REST API
+- Validation: Zod
+- Password Hashing: bcrypt
+- Environment Config: dotenv
+- CORS enabled
+- Deployment Ready
+- Clean scalable folder structure
+
+IMPORTANT:
+Do NOT redesign frontend UI.
+Frontend already exists.
+Only connect existing screens/components with APIs.
+
+---------------------------------------------------
+APP DETAILS
+---------------------------------------------------
+
+Brand Name:
+Shri Shyam Bachat Bazaar
+
+Tagline:
+“Sasta Bhi, Best Bhi”
+
+App Type:
+Blinkit/Zepto style grocery app
+
+Delivery Model:
+No live tracking.
+Delivery is slot-based.
+
+Delivery Slots:
+1. 7 AM – 10 AM
+2. 10 AM – 1 PM
+3. 4 PM – 7 PM
+4. 7 PM – 10 PM
+
+---------------------------------------------------
+BACKEND FEATURES
+---------------------------------------------------
+
+Build complete backend APIs for:
+
+1. Authentication
+- Register
+- Login
+- Logout
+- JWT token
+- Refresh token support
+- Mobile number login supported
+- Guest cart merge support later-ready architecture
+
+2. User Profile
+- Fetch profile
+- Update profile
+- Save multiple addresses
+- Default address support
+
+3. Categories
+- Dynamic category APIs
+- Category image
+- Category slug
+
+4. Products
+- Product listing
+- Product details
+- Product search
+- Filter by category
+- Bestseller products
+- Offer products
+- Product stock
+- Product images
+- Product variants (optional future-ready)
+
+5. Cart System
+- Add to cart
+- Update quantity
+- Remove item
+- Get cart
+- Clear cart
+
+6. Checkout
+- Delivery address selection
+- Delivery slot selection
+- COD support
+- Future-ready for UPI integration
+
+7. Orders
+- Place order
+- Order history
+- Order details
+- Order statuses:
+  - Pending
+  - Confirmed
+  - Packed
+  - Out for Delivery
+  - Delivered
+  - Cancelled
+
+8. Coupons
+- Apply coupon
+- Validate coupon
+- Discount calculation
+
+9. Banners
+- Dynamic home banners
+- Offer banners
+
+10. Notifications
+- API-ready structure for push notifications later
+
+---------------------------------------------------
+DATABASE DESIGN
+---------------------------------------------------
+
+Create Prisma schema for:
+
+Users
+Addresses
+Categories
+Products
+ProductImages
+Cart
+CartItems
+Orders
+OrderItems
+Coupons
+Banners
+DeliverySlots
+
+Include:
+- timestamps
+- relations
+- indexes
+- soft delete where needed
+
+---------------------------------------------------
+API STRUCTURE
+---------------------------------------------------
+
+Use structure like:
+
+/api/auth/register
+/api/auth/login
+/api/products
+/api/products/:id
+/api/categories
+/api/cart
+/api/orders
+/api/address
+/api/coupons/apply
+
+Return proper JSON responses.
+
+Example:
+
+{
+  "success": true,
+  "message": "Product fetched successfully",
+  "data": {}
+}
+
+---------------------------------------------------
+FRONTEND CONNECTION TASK
+---------------------------------------------------
+
+Connect frontend screens to backend APIs:
+
+Home Screen:
+- fetch categories
+- fetch banners
+- fetch best offers
+
+Search Screen:
+- real product search
+
+Cart Screen:
+- dynamic cart API
+
+Checkout Screen:
+- dynamic address
+- delivery slot API
+
+Profile Screen:
+- login/register integration
+- order history
+
+Replace ALL mock/static data with API calls.
+
+---------------------------------------------------
+STATE MANAGEMENT
+---------------------------------------------------
+
+Use:
+- React Query OR Zustand (choose best)
+- Axios API client
+- Global auth state
+- Persistent login
+
+---------------------------------------------------
+ENV VARIABLES
+---------------------------------------------------
+
+Create proper .env.example
+
+Include:
+DATABASE_URL=
+JWT_SECRET=
+PORT=
+CLIENT_URL=
+
+---------------------------------------------------
+ADMIN READY ARCHITECTURE
+---------------------------------------------------
+
+Keep backend scalable for future admin panel:
+
+Future modules:
+- inventory management
+- delivery boy module
+- wholesale orders
+- analytics dashboard
+- offer engine
+
+---------------------------------------------------
+DELIVERABLES
+---------------------------------------------------
+
+Generate:
+
+1. Backend folder structure
+2. Prisma schema
+3. Express server setup
+4. Auth middleware
+5. API routes
+6. Controllers
+7. Database connection
+8. Axios frontend API integration
+9. Example API calls
+10. Replit deployment instructions
+11. PostgreSQL setup steps
+12. Seed data script
+
+IMPORTANT:
+Code should be clean, production-ready, modular, and beginner-friendly.
+
+Do not generate placeholder pseudo code.
+Generate real working code.

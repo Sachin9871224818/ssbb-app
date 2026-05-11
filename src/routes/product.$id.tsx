@@ -1,41 +1,63 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { Share2, Heart, Plus, Minus, Truck, ShieldCheck, Clock } from "lucide-react";
-import { findProduct, products } from "@/lib/data";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Share2, Heart, Plus, Minus, Truck, ShieldCheck, Clock, Loader2 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { TopBar } from "@/components/app/TopBar";
 import { ProductCard } from "@/components/app/ProductCard";
 import { toast } from "sonner";
+import { useProduct, useProducts } from "@/hooks/use-api";
 
 export const Route = createFileRoute("/product/$id")({
-  loader: ({ params }) => {
-    const product = findProduct(params.id);
-    if (!product) throw notFound();
-    return { product };
-  },
-  head: ({ loaderData }) => ({
+  head: ({ params }) => ({
     meta: [
-      { title: `${loaderData?.product.name ?? "Product"} — Shri Shyam Bachat Bazaar` },
-      { name: "description", content: `Buy ${loaderData?.product.name} at ₹${loaderData?.product.price} on Shri Shyam Bachat Bazaar.` },
+      { title: `Product — Shri Shyam Bachat Bazaar` },
+      { name: "description", content: `Shop products on Shri Shyam Bachat Bazaar — ID: ${params.id}` },
     ],
   }),
-  errorComponent: ({ error }) => <p className="p-6 text-sm">{error.message}</p>,
-  notFoundComponent: () => (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6 text-center">
-      <p className="text-sm">Product not found</p>
-      <Link to="/" className="mt-4 rounded-full bg-secondary px-5 py-2 text-xs font-bold text-primary">Back home</Link>
-    </div>
-  ),
   component: ProductPage,
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const { id } = Route.useParams();
+  const query = useProduct(id);
+  const product = query.data;
+
   const cart = useStore((s) => s.cart);
   const add = useStore((s) => s.add);
   const setQty = useStore((s) => s.setQty);
+
+  const categorySlug = product?.category?.slug ?? product?.categoryId ?? "";
+  const relatedQuery = useProducts(categorySlug ? { category: categorySlug } : undefined);
+  const related = (relatedQuery.data ?? []).filter((p) => p.id !== id).slice(0, 6);
+
+  if (query.isLoading) {
+    return (
+      <div>
+        <TopBar title="Product" />
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-secondary" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center p-6 text-center">
+        <p className="text-sm">Product not found</p>
+        <Link to="/" className="mt-4 rounded-full bg-secondary px-5 py-2 text-xs font-bold text-primary">Back home</Link>
+      </div>
+    );
+  }
+
   const item = cart[product.id];
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
-  const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 6);
+
+  const cartProduct = {
+    id: product.id, name: product.name, qty: product.qty,
+    price: product.price, mrp: product.mrp,
+    emoji: product.emoji ?? "🛒", bg: product.bg ?? "#f5f5f5",
+    category: product.category?.slug ?? "",
+  };
 
   const share = async () => {
     if (typeof navigator !== "undefined" && "share" in navigator) {
@@ -56,8 +78,8 @@ function ProductPage() {
         }
       />
       <div className="px-4">
-        <div className="relative flex h-72 items-center justify-center rounded-3xl" style={{ background: product.bg }}>
-          <span className="text-[140px]">{product.emoji}</span>
+        <div className="relative flex h-72 items-center justify-center rounded-3xl" style={{ background: product.bg ?? "#f5f5f5" }}>
+          <span className="text-[140px]">{product.emoji ?? "🛒"}</span>
           {discount > 0 && (
             <span className="absolute left-4 top-4 rounded-full bg-secondary px-3 py-1 text-xs font-bold text-primary">{discount}% OFF</span>
           )}
@@ -83,14 +105,14 @@ function ProductPage() {
         <section className="mt-6">
           <h2 className="text-sm font-bold">About this product</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Hand-picked, freshly stocked at our Rajokri & Mahipalpur stores. Choose your delivery slot at checkout — morning, afternoon, evening or night.
+            {product.description || "Hand-picked, freshly stocked at our Rajokri & Mahipalpur stores. Choose your delivery slot at checkout — morning, afternoon, evening or night."}
           </p>
         </section>
 
         <section className="mt-6">
           <h2 className="text-sm font-bold">Product details</h2>
           <dl className="mt-2 divide-y divide-border rounded-2xl border border-border bg-card text-sm">
-            <Row k="Category" v={product.category} />
+            <Row k="Category" v={product.category?.name ?? product.category?.slug ?? "General"} />
             <Row k="Quantity" v={product.qty} />
             <Row k="Brand" v="Shri Shyam Bachat Bazaar" />
             <Row k="Country of origin" v="India" />
@@ -107,21 +129,20 @@ function ProductPage() {
         )}
       </div>
 
-      {/* Sticky add to cart */}
       <div className="sticky bottom-24 z-10 mx-4 mb-4 mt-6 flex items-center justify-between gap-3 rounded-2xl bg-secondary p-3 text-secondary-foreground mustard-shadow">
         <div className="leading-tight">
           <p className="text-[11px] uppercase tracking-wide text-secondary-foreground/60">Total</p>
           <p className="text-lg font-extrabold">₹{(item?.qty ?? 1) * product.price}</p>
         </div>
         {!item ? (
-          <button onClick={() => add(product)} className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground transition-transform active:scale-95">
+          <button onClick={() => add(cartProduct)} className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground transition-transform active:scale-95">
             Add to cart
           </button>
         ) : (
           <div className="flex flex-1 items-center justify-between rounded-xl bg-primary px-3 py-2.5 text-primary-foreground">
             <button onClick={() => setQty(product.id, item.qty - 1)} className="rounded-md p-1.5"><Minus className="h-4 w-4" /></button>
             <span className="text-sm font-bold">{item.qty} in cart</span>
-            <button onClick={() => add(product)} className="rounded-md p-1.5"><Plus className="h-4 w-4" /></button>
+            <button onClick={() => add(cartProduct)} className="rounded-md p-1.5"><Plus className="h-4 w-4" /></button>
           </div>
         )}
       </div>

@@ -2,13 +2,13 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Banknote, Smartphone, CreditCard, Check } from "lucide-react";
 import { useStore, cartTotals } from "@/lib/store";
-import { slots } from "@/lib/data";
 import { TopBar } from "@/components/app/TopBar";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
-import { useServerFn } from "@tanstack/react-start";
-import { placeOrder } from "@/lib/orders.functions";
 import { toast } from "sonner";
+import { api } from "@/lib/apiClient";
+import { useSlots } from "@/hooks/use-api";
+import { slots as fallbackSlots } from "@/lib/data";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — Shri Shyam Bachat Bazaar" }] }),
@@ -27,13 +27,17 @@ function CheckoutPage() {
   const addressId = useStore((s) => s.selectedAddressId);
   const clear = useStore((s) => s.clear);
   const t = cartTotals(cart);
-  const slot = slots.find((s) => s.id === slotId);
+
+  const slotsQuery = useSlots();
+  const allSlots = slotsQuery.data ?? fallbackSlots.map((s) => ({ ...s, id: s.id, slotKey: s.id }));
+  const slot = allSlots.find((s: any) => (s.slotKey ?? s.id) === slotId);
+
   const [method, setMethod] = useState<typeof methods[number]["id"]>("cod");
   const [placing, setPlacing] = useState(false);
   const [done, setDone] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const placeOrderFn = useServerFn(placeOrder);
 
   if (!user) {
     return (
@@ -54,18 +58,20 @@ function CheckoutPage() {
     }
     setPlacing(true);
     try {
-      await placeOrderFn({
-        data: {
-          items: Object.values(cart).map((c) => ({ productId: c.product.id, quantity: c.qty })),
-          paymentMethod: method,
-          deliverySlot: slotId,
-          addressId,
-        },
+      const { data } = await api.post("/api/orders", {
+        items: Object.values(cart).map((c) => ({ productId: c.product.id, quantity: c.qty })),
+        paymentMethod: method,
+        deliverySlot: slotId,
+        addressId,
       });
+      setOrderId(data.data?.id ?? null);
       setDone(true);
-      setTimeout(() => { clear(); navigate({ to: "/order" }); }, 1500);
+      setTimeout(() => {
+        clear();
+        navigate({ to: "/order", search: { id: data.data?.id } });
+      }, 1500);
     } catch (e: any) {
-      toast.error(e?.message || "Could not place order. Make sure your products & address are saved.");
+      toast.error(e?.response?.data?.message || "Could not place order. Please try again.");
       setPlacing(false);
     }
   };
@@ -90,7 +96,7 @@ function CheckoutPage() {
         {slot && (
           <div className="rounded-2xl bg-secondary p-4 text-secondary-foreground">
             <p className="text-[11px] font-bold uppercase tracking-widest text-primary">Delivery slot</p>
-            <p className="mt-0.5 text-sm font-bold">{slot.label} · {slot.time}</p>
+            <p className="mt-0.5 text-sm font-bold">{(slot as any).label} · {(slot as any).time}</p>
           </div>
         )}
 
@@ -101,9 +107,7 @@ function CheckoutPage() {
             const Icon = m.icon;
             return (
               <li key={m.id} onClick={() => setMethod(m.id)}
-                className={`flex cursor-pointer items-center gap-3 rounded-2xl border p-3 transition-all ${
-                  active ? "border-secondary bg-accent/60" : "border-border bg-card"
-                }`}>
+                className={`flex cursor-pointer items-center gap-3 rounded-2xl border p-3 transition-all ${active ? "border-secondary bg-accent/60" : "border-border bg-card"}`}>
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary text-primary"><Icon className="h-4 w-4" /></div>
                 <div className="flex-1 leading-tight">
                   <p className="text-sm font-bold">{m.label}</p>
@@ -131,11 +135,8 @@ function CheckoutPage() {
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-30 mx-auto flex w-full max-w-[480px] gap-3 border-t border-border bg-background p-4">
-        <button
-          onClick={handlePlace}
-          disabled={placing || t.itemsCount === 0}
-          className="flex-1 rounded-2xl bg-secondary py-3.5 text-sm font-bold text-primary-foreground mustard-shadow disabled:opacity-60"
-        >
+        <button onClick={handlePlace} disabled={placing || t.itemsCount === 0}
+          className="flex-1 rounded-2xl bg-secondary py-3.5 text-sm font-bold text-primary-foreground mustard-shadow disabled:opacity-60">
           {placing ? "Placing order…" : `Place order · ₹${t.total}`}
         </button>
       </div>

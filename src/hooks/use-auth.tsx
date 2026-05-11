@@ -1,36 +1,81 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/apiClient";
+import { toast } from "sonner";
+
+export type AuthUser = {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  role: string;
+};
 
 type Ctx = {
-  session: Session | null;
-  user: User | null;
+  user: AuthUser | null;
   loading: boolean;
-  signOut: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (name: string, email: string, password: string, phone?: string) => Promise<void>;
+  signOut: () => void;
+  refreshUser: () => Promise<void>;
 };
-const AuthCtx = createContext<Ctx>({ session: null, user: null, loading: true, signOut: async () => {} });
+
+const AuthCtx = createContext<Ctx>({
+  user: null,
+  loading: true,
+  signIn: async () => {},
+  signUp: async () => {},
+  signOut: () => {},
+  refreshUser: async () => {},
+});
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Listener FIRST (per Supabase guidance)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s);
+  const loadUser = async () => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("ssbb_token") : null;
+    if (!token) { setLoading(false); return; }
+    try {
+      const { data } = await api.get("/api/auth/me");
+      setUser(data.data);
+    } catch {
+      localStorage.removeItem("ssbb_token");
+      localStorage.removeItem("ssbb_refresh");
+      setUser(null);
+    } finally {
       setLoading(false);
-    });
-    supabase.auth.getSession().then(({ data }) => { setSession(data.session); setLoading(false); });
-    return () => subscription.unsubscribe();
-  }, []);
+    }
+  };
+
+  useEffect(() => { loadUser(); }, []);
+
+  const signIn = async (email: string, password: string) => {
+    const { data } = await api.post("/api/auth/login", { email, password });
+    const { user: u, accessToken, refreshToken } = data.data;
+    localStorage.setItem("ssbb_token", accessToken);
+    localStorage.setItem("ssbb_refresh", refreshToken);
+    setUser(u);
+  };
+
+  const signUp = async (name: string, email: string, password: string, phone?: string) => {
+    const { data } = await api.post("/api/auth/register", { name, email, password, phone });
+    const { user: u, accessToken, refreshToken } = data.data;
+    localStorage.setItem("ssbb_token", accessToken);
+    localStorage.setItem("ssbb_refresh", refreshToken);
+    setUser(u);
+  };
+
+  const signOut = () => {
+    localStorage.removeItem("ssbb_token");
+    localStorage.removeItem("ssbb_refresh");
+    setUser(null);
+    toast.success("Logged out");
+  };
 
   return (
-    <AuthCtx.Provider value={{
-      session,
-      user: session?.user ?? null,
-      loading,
-      signOut: async () => { await supabase.auth.signOut(); },
-    }}>{children}</AuthCtx.Provider>
+    <AuthCtx.Provider value={{ user, loading, signIn, signUp, signOut, refreshUser: loadUser }}>
+      {children}
+    </AuthCtx.Provider>
   );
 }
 

@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPin, Search, Bell, MessageCircle, ChevronDown } from "lucide-react";
-import { categories, products, banners } from "@/lib/data";
 import { ProductCard } from "@/components/app/ProductCard";
 import { SectionHeader } from "@/components/app/SectionHeader";
+import { useCategories, useBanners, useOffers, useProducts } from "@/hooks/use-api";
+import { categories as fallbackCategories, banners as fallbackBanners, products as fallbackProducts } from "@/lib/data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -15,14 +16,22 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const offers = products.filter((p) => p.mrp - p.price >= 30).slice(0, 8);
-  const essentials = products.filter((p) => p.category === "essentials");
-  const veg = products.filter((p) => p.category === "vegetables");
-  const wholesale = products.filter((p) => p.category === "wholesale");
+  const categoriesQuery = useCategories();
+  const bannersQuery = useBanners();
+  const offersQuery = useOffers();
+  const essentialsQuery = useProducts({ category: "essentials" });
+  const vegQuery = useProducts({ category: "vegetables" });
+  const wholesaleQuery = useProducts({ category: "wholesale" });
+
+  const categories = categoriesQuery.data ?? fallbackCategories.map((c) => ({ ...c, id: c.slug }));
+  const banners = bannersQuery.data ?? fallbackBanners;
+  const offers = offersQuery.data ?? fallbackProducts.filter((p) => p.mrp - p.price >= 30).slice(0, 8);
+  const essentials = essentialsQuery.data ?? fallbackProducts.filter((p) => p.category === "essentials");
+  const veg = vegQuery.data ?? fallbackProducts.filter((p) => p.category === "vegetables");
+  const wholesale = wholesaleQuery.data ?? fallbackProducts.filter((p) => p.category === "wholesale");
 
   return (
     <div className="flex flex-col">
-      {/* Header */}
       <header className="gradient-ink rounded-b-3xl px-4 pb-5 pt-5 text-secondary-foreground">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-2">
@@ -64,7 +73,7 @@ function Home() {
       {/* Banners */}
       <div className="-mt-2 flex gap-3 overflow-x-auto px-4 pt-4 no-scrollbar">
         {banners.map((b) => (
-          <div key={b.id} className="flex min-w-[78%] snap-start flex-col justify-between rounded-2xl p-4 ink-shadow" style={{ background: b.bg, color: b.fg }}>
+          <div key={b.id} className="flex min-w-[78%] snap-start flex-col justify-between rounded-2xl p-4 ink-shadow" style={{ background: b.bg ?? undefined, color: b.fg ?? undefined }}>
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-widest opacity-80">Today's special</p>
               <p className="mt-1 text-lg font-extrabold leading-tight">{b.title}</p>
@@ -80,7 +89,7 @@ function Home() {
       <div className="grid grid-cols-4 gap-3 px-4">
         {categories.map((c) => (
           <Link key={c.slug} to="/category/$slug" params={{ slug: c.slug }} className="flex flex-col items-center gap-1.5">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl text-3xl" style={{ background: c.bg }}>
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl text-3xl" style={{ background: c.bg ?? undefined }}>
               {c.emoji}
             </div>
             <span className="text-center text-[10px] font-semibold leading-tight">{c.name}</span>
@@ -91,7 +100,6 @@ function Home() {
       <Section title="Best offers" subtitle="Handpicked deals just for you" items={offers} />
       <Section title="Daily essentials" subtitle="Stock your pantry" items={essentials} />
 
-      {/* Wholesale callout */}
       <div className="mx-4 mt-6 overflow-hidden rounded-3xl bg-secondary p-5 text-secondary-foreground ink-shadow">
         <p className="text-[11px] font-bold uppercase tracking-widest text-primary">Wholesale Bazaar</p>
         <p className="mt-1 text-xl font-extrabold leading-tight">Bulk grocery at<br/>shopkeeper prices</p>
@@ -111,8 +119,8 @@ function Home() {
   );
 }
 
-function Section({ title, subtitle, items }: { title: string; subtitle?: string; items: typeof products }) {
-  if (items.length === 0) return null;
+function Section({ title, subtitle, items }: { title: string; subtitle?: string; items: any[] }) {
+  if (!items || items.length === 0) return null;
   return (
     <>
       <SectionHeader title={title} subtitle={subtitle} />
