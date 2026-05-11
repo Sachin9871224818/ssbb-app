@@ -17,6 +17,7 @@ import couponRoutes from "./routes/coupons.js";
 import slotRoutes from "./routes/slots.js";
 import profileRoutes from "./routes/profile.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
+import adminRoutes from "./routes/admin.js";
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use("/api/banners", bannerRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/slots", slotRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

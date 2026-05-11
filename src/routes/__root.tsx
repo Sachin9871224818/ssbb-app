@@ -80,7 +80,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 const HIDDEN_ON = ["/splash", "/login", "/order", "/checkout"];
-const FULLSCREEN = ["/auth"];
+const FULLSCREEN = ["/auth", "/admin"];
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
