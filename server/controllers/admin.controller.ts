@@ -160,12 +160,13 @@ const ProductSchema = z.object({
   qty: z.string().min(1).max(30),
   price: z.number().min(0),
   mrp: z.number().min(0),
+  imageUrl: z.string().url().optional().nullable().or(z.literal("")),
   emoji: z.string().optional().nullable(),
   bg: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   inStock: z.boolean().optional(),
   isBestseller: z.boolean().optional(),
-  categoryId: z.string().uuid().optional().nullable(),
+  categoryId: z.string().uuid().optional().nullable().or(z.literal("")),
 });
 
 export async function adminGetProducts(req: Request, res: Response) {
@@ -190,19 +191,23 @@ export async function adminGetProducts(req: Request, res: Response) {
 }
 
 export async function createProduct(req: Request, res: Response) {
-  const body = ProductSchema.parse(req.body);
+  const raw = ProductSchema.parse(req.body);
+  const data = { ...raw, categoryId: raw.categoryId || null, imageUrl: raw.imageUrl || null };
   const product = await prisma.product.create({
-    data: body,
+    data,
     include: { category: { select: { id: true, slug: true, name: true } } },
   });
   res.status(201).json({ success: true, message: "Product created", data: mapProduct(product) });
 }
 
 export async function updateProduct(req: Request, res: Response) {
-  const body = ProductSchema.partial().parse(req.body);
+  const raw = ProductSchema.partial().parse(req.body);
+  const data: any = { ...raw };
+  if ("categoryId" in raw) data.categoryId = raw.categoryId || null;
+  if ("imageUrl" in raw) data.imageUrl = raw.imageUrl || null;
   const product = await prisma.product.update({
     where: { id: req.params.id },
-    data: body,
+    data,
     include: { category: { select: { id: true, slug: true, name: true } } },
   });
   res.json({ success: true, message: "Product updated", data: mapProduct(product) });

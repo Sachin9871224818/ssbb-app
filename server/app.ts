@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
+import path from "path";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ import slotRoutes from "./routes/slots.js";
 import profileRoutes from "./routes/profile.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
 import adminRoutes from "./routes/admin.js";
+import uploadRoutes from "./routes/upload.js";
 
 const app = express();
 
@@ -25,6 +27,9 @@ app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+// Serve uploaded images statically
+app.use("/uploads", express.static(path.join(process.cwd(), "public", "uploads")));
 
 app.get("/api/health", (_req, res) => {
   res.json({ success: true, message: "Shri Shyam Bachat Bazaar API is running 🛒" });
@@ -41,6 +46,7 @@ app.use("/api/coupons", couponRoutes);
 app.use("/api/slots", slotRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/admin/upload", uploadRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
