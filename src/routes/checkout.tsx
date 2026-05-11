@@ -1,10 +1,14 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Banknote, Smartphone, CreditCard, Check } from "lucide-react";
 import { useStore, cartTotals } from "@/lib/store";
 import { slots } from "@/lib/data";
 import { TopBar } from "@/components/app/TopBar";
 import { motion } from "framer-motion";
+import { useAuth } from "@/hooks/use-auth";
+import { useServerFn } from "@tanstack/react-start";
+import { placeOrder } from "@/lib/orders.functions";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — Shri Shyam Bachat Bazaar" }] }),
@@ -20,6 +24,7 @@ const methods = [
 function CheckoutPage() {
   const cart = useStore((s) => s.cart);
   const slotId = useStore((s) => s.selectedSlot);
+  const addressId = useStore((s) => s.selectedAddressId);
   const clear = useStore((s) => s.clear);
   const t = cartTotals(cart);
   const slot = slots.find((s) => s.id === slotId);
@@ -27,11 +32,42 @@ function CheckoutPage() {
   const [placing, setPlacing] = useState(false);
   const [done, setDone] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const placeOrderFn = useServerFn(placeOrder);
 
-  const placeOrder = () => {
+  if (!user) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 px-6 text-center">
+        <p className="text-2xl">🔐</p>
+        <p className="text-base font-bold">Sign in to place your order</p>
+        <p className="text-xs text-muted-foreground">Your cart is saved. Come back after signing in.</p>
+        <Link to="/auth" search={{ next: "/checkout" }} className="mt-4 rounded-full bg-secondary px-6 py-3 text-xs font-bold text-primary-foreground mustard-shadow">
+          Sign in to continue
+        </Link>
+      </div>
+    );
+  }
+
+  const handlePlace = async () => {
+    if (!slotId || !addressId || t.itemsCount === 0) {
+      toast.error("Missing slot, address or items"); return;
+    }
     setPlacing(true);
-    setTimeout(() => { setPlacing(false); setDone(true); }, 1100);
-    setTimeout(() => { clear(); navigate({ to: "/order" }); }, 2200);
+    try {
+      await placeOrderFn({
+        data: {
+          items: Object.values(cart).map((c) => ({ productId: c.product.id, quantity: c.qty })),
+          paymentMethod: method,
+          deliverySlot: slotId,
+          addressId,
+        },
+      });
+      setDone(true);
+      setTimeout(() => { clear(); navigate({ to: "/order" }); }, 1500);
+    } catch (e: any) {
+      toast.error(e?.message || "Could not place order. Make sure your products & address are saved.");
+      setPlacing(false);
+    }
   };
 
   if (done) {
@@ -96,7 +132,7 @@ function CheckoutPage() {
 
       <div className="fixed inset-x-0 bottom-0 z-30 mx-auto flex w-full max-w-[480px] gap-3 border-t border-border bg-background p-4">
         <button
-          onClick={placeOrder}
+          onClick={handlePlace}
           disabled={placing || t.itemsCount === 0}
           className="flex-1 rounded-2xl bg-secondary py-3.5 text-sm font-bold text-primary-foreground mustard-shadow disabled:opacity-60"
         >
