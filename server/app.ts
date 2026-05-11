@@ -20,14 +20,8 @@ import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
 const app = express();
 
-const allowedOrigins = [
-  "http://localhost:5000",
-  "http://0.0.0.0:5000",
-  process.env.CLIENT_URL || "",
-].filter(Boolean);
-
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
-app.use(cors({ origin: (origin, cb) => cb(null, true), credentials: true }));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 

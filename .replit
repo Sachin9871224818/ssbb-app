@@ -2,6 +2,7 @@ modules = ["nodejs-20", "web"]
 [agent]
 expertMode = true
 stack = "BEST_EFFORT_FALLBACK"
+integrations = ["javascript_database:1.0.0"]
 
 [nix]
 channel = "stable-25_05"
@@ -62,9 +63,9 @@ publicDir = "dist"
 [userenv]
 
 [userenv.shared]
-VITE_API_URL = "http://localhost:8000"
+VITE_API_URL = ""
 API_PORT = "8000"
 NODE_ENV = "development"
-CLIENT_URL = "http://localhost:5000"
-JWT_SECRET = "ssbb-jwt-signing-secret-shri-shyam-bachat-bazaar-2024"
-JWT_REFRESH_SECRET = "ssbb-jwt-refresh-secret-shri-shyam-bachat-bazaar-2024"
+CLIENT_URL = ""
+JWT_SECRET = "cd6b6a4ffa16a67ea44acbbc09834538cd075186e4e2123f76e2253486a98fac"
+JWT_REFRESH_SECRET = "b14ee70d2127aae5acdff8469857ef0fe45e932d495bff821bc6ae0f24b0746e"

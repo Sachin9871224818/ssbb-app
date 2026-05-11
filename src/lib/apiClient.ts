@@ -3,7 +3,7 @@ import axios from "axios";
 const BASE_URL =
   (typeof window !== "undefined"
     ? import.meta.env.VITE_API_URL
-    : process.env.VITE_API_URL) ?? "http://localhost:8000";
+    : process.env.VITE_API_URL) ?? "";
 
 export const api = axios.create({
   baseURL: BASE_URL,
