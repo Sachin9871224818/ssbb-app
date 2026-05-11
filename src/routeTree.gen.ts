@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SlotRouteImport } from './routes/slot'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as AddressRouteImport } from './routes/address'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 
+const SlotRoute = SlotRouteImport.update({
+  id: '/slot',
+  path: '/slot',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CartRoute = CartRouteImport.update({
   id: '/cart',
   path: '/cart',
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/address': typeof AddressRoute
   '/cart': typeof CartRoute
+  '/slot': typeof SlotRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$id': typeof ProductIdRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/address': typeof AddressRoute
   '/cart': typeof CartRoute
+  '/slot': typeof SlotRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$id': typeof ProductIdRoute
 }
@@ -60,19 +68,27 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/address': typeof AddressRoute
   '/cart': typeof CartRoute
+  '/slot': typeof SlotRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$id': typeof ProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/address' | '/cart' | '/category/$slug' | '/product/$id'
+  fullPaths:
+    | '/'
+    | '/address'
+    | '/cart'
+    | '/slot'
+    | '/category/$slug'
+    | '/product/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/address' | '/cart' | '/category/$slug' | '/product/$id'
+  to: '/' | '/address' | '/cart' | '/slot' | '/category/$slug' | '/product/$id'
   id:
     | '__root__'
     | '/'
     | '/address'
     | '/cart'
+    | '/slot'
     | '/category/$slug'
     | '/product/$id'
   fileRoutesById: FileRoutesById
@@ -81,12 +97,20 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AddressRoute: typeof AddressRoute
   CartRoute: typeof CartRoute
+  SlotRoute: typeof SlotRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ProductIdRoute: typeof ProductIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/slot': {
+      id: '/slot'
+      path: '/slot'
+      fullPath: '/slot'
+      preLoaderRoute: typeof SlotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cart': {
       id: '/cart'
       path: '/cart'
@@ -129,6 +153,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddressRoute: AddressRoute,
   CartRoute: CartRoute,
+  SlotRoute: SlotRoute,
   CategorySlugRoute: CategorySlugRoute,
   ProductIdRoute: ProductIdRoute,
 }
