@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { BottomNav } from "@/components/app/BottomNav";
 import { StickyCartBar } from "@/components/app/StickyCartBar";
 import { Toaster } from "sonner";
+import { AuthProvider } from "@/hooks/use-auth";
 
 function NotFoundComponent() {
   return (
@@ -79,20 +80,24 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 const HIDDEN_ON = ["/splash", "/login", "/order", "/checkout"];
+const FULLSCREEN = ["/auth"];
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const hideNav = HIDDEN_ON.some((p) => path.startsWith(p)) || path === "/splash";
+  const fullscreen = FULLSCREEN.some((p) => path.startsWith(p));
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="mx-auto flex min-h-screen w-full max-w-[480px] flex-col bg-background">
-        <Outlet />
-      </div>
-      {!hideNav && <StickyCartBar />}
-      {!hideNav && <BottomNav />}
-      <Toaster position="top-center" richColors />
+      <AuthProvider>
+        <div className="mx-auto flex min-h-screen w-full max-w-[480px] flex-col bg-background">
+          <Outlet />
+        </div>
+        {!hideNav && !fullscreen && <StickyCartBar />}
+        {!hideNav && !fullscreen && <BottomNav />}
+        <Toaster position="top-center" richColors />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
