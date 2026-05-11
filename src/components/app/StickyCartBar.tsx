@@ -1,30 +1,24 @@
 import { Link } from "@tanstack/react-router";
-import { ShoppingBag, ArrowRight } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { useStore, cartTotals } from "@/lib/store";
 
 export function StickyCartBar() {
   const cart = useStore((s) => s.cart);
   const { itemsCount, subtotal } = cartTotals(cart);
   if (itemsCount === 0) return null;
+
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-20 z-30 flex justify-center px-4">
+    <div className="pointer-events-none fixed bottom-24 right-4 z-30">
       <Link
         to="/cart"
-        className="pointer-events-auto flex w-full max-w-[440px] items-center justify-between rounded-2xl bg-secondary px-4 py-3 text-secondary-foreground mustard-shadow transition-transform active:scale-[0.98]"
+        className="pointer-events-auto relative flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary text-primary mustard-shadow transition-transform active:scale-95"
       >
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <ShoppingBag className="h-5 w-5" />
-          </div>
-          <div className="flex flex-col leading-tight">
-            <span className="text-[11px] uppercase tracking-wide text-secondary-foreground/60">{itemsCount} item{itemsCount > 1 ? "s" : ""}</span>
-            <span className="text-sm font-semibold">₹{subtotal}</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-1 text-sm font-semibold text-primary">
-          View cart <ArrowRight className="h-4 w-4" />
-        </div>
+        <ShoppingBag className="h-6 w-6" />
+        <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-extrabold text-primary-foreground">
+          {itemsCount > 9 ? "9+" : itemsCount}
+        </span>
       </Link>
+      <p className="mt-1 text-center text-[10px] font-bold text-secondary">₹{subtotal}</p>
     </div>
   );
 }

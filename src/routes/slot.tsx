@@ -65,7 +65,7 @@ function SlotPage() {
 
       <div className="sticky bottom-24 mx-4 mt-6">
         {selected ? (
-          <Link to="/checkout" className="block rounded-2xl bg-secondary py-3.5 text-center text-sm font-bold text-primary-foreground mustard-shadow">
+          <Link to="/checkout" className="block rounded-2xl bg-secondary py-3.5 text-center text-sm font-bold text-secondary-foreground mustard-shadow">
             Continue to payment →
           </Link>
         ) : (
