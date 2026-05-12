@@ -22,7 +22,7 @@ function SearchPage() {
   const results = searchQuery.data ?? [];
 
   return (
-    <div>
+    <div className="pb-36">
       <TopBar
         right={
           <div className="flex flex-1 items-center gap-2 rounded-full bg-card px-3 py-2 ink-shadow">

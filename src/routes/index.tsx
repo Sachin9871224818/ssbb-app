@@ -53,7 +53,7 @@ function Home() {
   const seeAllEmojis = [...offers, ...essentials].slice(0, 5).map((p) => (p as any).emoji ?? "🛒");
 
   return (
-    <div className="flex flex-col pb-8">
+    <div className="flex flex-col pb-36">
       {/* ── 1. Delivery Header ── */}
       <header className="gradient-ink px-4 pb-4 pt-5 text-secondary-foreground">
         <div className="flex items-center justify-between">

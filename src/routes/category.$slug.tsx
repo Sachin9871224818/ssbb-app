@@ -48,7 +48,7 @@ function CategoryPage() {
   const items = cat.products ?? [];
 
   return (
-    <div>
+    <div className="pb-36">
       <TopBar title={cat.name} />
       <div className="px-4 pt-2">
         <div className="flex items-center gap-3 rounded-3xl p-4 ink-shadow" style={{ background: cat.bg ?? undefined }}>

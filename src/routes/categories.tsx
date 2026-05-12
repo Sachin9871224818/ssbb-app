@@ -34,7 +34,7 @@ function CategoriesPage() {
           </Link>
         ))}
       </div>
-      <div className="h-4" />
+      <div className="h-36" />
     </div>
   );
 }
