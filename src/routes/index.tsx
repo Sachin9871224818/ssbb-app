@@ -141,10 +141,22 @@ function Home() {
               ? categories.map((c) => (
                   <Link key={c.slug} to="/category/$slug" params={{ slug: c.slug }} className="flex flex-shrink-0 flex-col items-center gap-1.5">
                     <div
-                      className="flex h-[58px] w-[58px] items-center justify-center rounded-2xl text-2xl transition-transform active:scale-95"
+                      className="h-[58px] w-[58px] overflow-hidden rounded-2xl transition-transform active:scale-95"
                       style={{ background: (c as any).bg ?? "#f5f5f5" }}
                     >
-                      {(c as any).emoji}
+                      <img
+                        src={`/categories/${c.slug}.jpg`}
+                        alt={c.name}
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).style.display = "none";
+                          (e.currentTarget.parentElement as HTMLElement).style.fontSize = "24px";
+                          (e.currentTarget.parentElement as HTMLElement).style.display = "flex";
+                          (e.currentTarget.parentElement as HTMLElement).style.alignItems = "center";
+                          (e.currentTarget.parentElement as HTMLElement).style.justifyContent = "center";
+                          (e.currentTarget.parentElement as HTMLElement).textContent = (c as any).emoji ?? "🛒";
+                        }}
+                      />
                     </div>
                     <span className="w-14 text-center text-[9px] font-semibold leading-tight">{c.name}</span>
                   </Link>
