@@ -1,13 +1,17 @@
 import { Link } from "@tanstack/react-router";
-import { Plus, Minus, Clock } from "lucide-react";
+import { Plus, Minus, Clock, Heart } from "lucide-react";
 import type { Product } from "@/lib/data";
 import { useStore } from "@/lib/store";
+import { toast } from "sonner";
 
 export function ProductCard({ product }: { product: Product }) {
   const cart = useStore((s) => s.cart);
   const add = useStore((s) => s.add);
   const setQty = useStore((s) => s.setQty);
+  const wishlist = useStore((s) => s.wishlist);
+  const toggleWishlist = useStore((s) => s.toggleWishlist);
   const item = cart[product.id];
+  const isWishlisted = !!wishlist[product.id];
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
 
   return (
@@ -44,6 +48,18 @@ export function ProductCard({ product }: { product: Product }) {
               {discount}% OFF
             </span>
           )}
+
+          {/* Wishlist button */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              toggleWishlist(product);
+              toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
+            }}
+            className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm"
+          >
+            <Heart className={`h-3.5 w-3.5 transition-colors ${isWishlisted ? "fill-destructive text-destructive" : "text-muted-foreground"}`} />
+          </button>
 
           {/* Delivery badge */}
           <span className="absolute bottom-1.5 left-2 flex items-center gap-0.5 rounded-md bg-black/55 px-1.5 py-0.5 text-[9px] font-semibold text-white backdrop-blur-sm">
