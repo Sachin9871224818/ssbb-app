@@ -187,47 +187,40 @@ function Home() {
             ))}
           </div>
 
-          {/* ── 5. Frequently Bought ── */}
-          <SectionHeader title="Frequently bought" subtitle="Your kitchen staples" />
+          {/* ── 5. Categories ── */}
+          <SectionHeader title="Categories" subtitle="Shop by category" />
           <div className="grid grid-cols-2 gap-3 px-4">
             {categoriesQuery.isLoading
-              ? Array.from({ length: 4 }).map((_, i) => <FreqCardSkeleton key={i} />)
-              : FREQ_GROUPS.map((g) => (
+              ? Array.from({ length: 8 }).map((_, i) => <FreqCardSkeleton key={i} />)
+              : (categories ?? GROCERY_GRID).map((c) => (
                   <Link
-                    key={g.slug}
+                    key={c.slug}
                     to="/category/$slug"
-                    params={{ slug: g.slug }}
-                    className="relative overflow-hidden rounded-[20px] transition-transform active:scale-[0.97]"
+                    params={{ slug: c.slug }}
+                    className="flex items-center gap-3 rounded-2xl p-3.5 transition-transform active:scale-[0.97]"
+                    style={{ background: (c as any).bg ?? "#f5f5f5" }}
                   >
-                    <img
-                      src={g.img}
-                      alt={g.name}
-                      className="w-full h-auto block"
-                      draggable={false}
-                    />
+                    <span className="text-3xl">{(c as any).emoji ?? "🛒"}</span>
+                    <span className="text-sm font-bold leading-tight">{c.name}</span>
                   </Link>
                 ))}
           </div>
 
-          {/* ── 6. See All Products CTA ── */}
-          <button
-            onClick={() => document.querySelector<HTMLInputElement>('input[placeholder*="Search"]')?.focus()}
+          {/* ── 6. See All Categories CTA ── */}
+          <Link
+            to="/search"
             className="mx-4 mt-5 flex items-center gap-3 rounded-2xl bg-muted px-4 py-3 transition-opacity active:opacity-70"
           >
             <div className="flex -space-x-2">
-              {seeAllEmojis.length > 0
-                ? seeAllEmojis.map((e, i) => (
-                    <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-muted bg-card text-lg">
-                      {e}
-                    </div>
-                  ))
-                : Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="h-8 w-8 rounded-full border-2 border-muted bg-muted-foreground/20" />
-                  ))}
+              {(categories ?? GROCERY_GRID).slice(0, 5).map((c, i) => (
+                <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-muted bg-card text-lg">
+                  {(c as any).emoji ?? "🛒"}
+                </div>
+              ))}
             </div>
-            <p className="flex-1 text-sm font-semibold">See all products</p>
+            <p className="flex-1 text-sm font-semibold">See all categories</p>
             <ArrowRight className="h-4 w-4 text-muted-foreground" />
-          </button>
+          </Link>
 
           {/* ── 7. Grocery & Kitchen 4-col grid ── */}
           <SectionHeader title="Grocery & Kitchen" subtitle="Everything for your home" />
