@@ -9,10 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as SlotRouteImport } from './routes/slot'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OrderRouteImport } from './routes/order'
+import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as CouponsRouteImport } from './routes/coupons'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as CartRouteImport } from './routes/cart'
@@ -25,6 +28,11 @@ import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SlotRoute = SlotRouteImport.update({
   id: '/slot',
   path: '/slot',
@@ -43,6 +51,16 @@ const ProfileRoute = ProfileRouteImport.update({
 const OrderRoute = OrderRouteImport.update({
   id: '/order',
   path: '/order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CouponsRoute = CouponsRouteImport.update({
+  id: '/coupons',
+  path: '/coupons',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -109,10 +127,13 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
+  '/coupons': typeof CouponsRoute
+  '/notifications': typeof NotificationsRoute
   '/order': typeof OrderRoute
   '/profile': typeof ProfileRoute
   '/search': typeof SearchRoute
   '/slot': typeof SlotRoute
+  '/wishlist': typeof WishlistRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/category/$slug': typeof CategorySlugRoute
@@ -126,10 +147,13 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
+  '/coupons': typeof CouponsRoute
+  '/notifications': typeof NotificationsRoute
   '/order': typeof OrderRoute
   '/profile': typeof ProfileRoute
   '/search': typeof SearchRoute
   '/slot': typeof SlotRoute
+  '/wishlist': typeof WishlistRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/category/$slug': typeof CategorySlugRoute
@@ -144,10 +168,13 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
+  '/coupons': typeof CouponsRoute
+  '/notifications': typeof NotificationsRoute
   '/order': typeof OrderRoute
   '/profile': typeof ProfileRoute
   '/search': typeof SearchRoute
   '/slot': typeof SlotRoute
+  '/wishlist': typeof WishlistRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/category/$slug': typeof CategorySlugRoute
@@ -163,10 +190,13 @@ export interface FileRouteTypes {
     | '/cart'
     | '/categories'
     | '/checkout'
+    | '/coupons'
+    | '/notifications'
     | '/order'
     | '/profile'
     | '/search'
     | '/slot'
+    | '/wishlist'
     | '/admin/dashboard'
     | '/admin/login'
     | '/category/$slug'
@@ -180,10 +210,13 @@ export interface FileRouteTypes {
     | '/cart'
     | '/categories'
     | '/checkout'
+    | '/coupons'
+    | '/notifications'
     | '/order'
     | '/profile'
     | '/search'
     | '/slot'
+    | '/wishlist'
     | '/admin/dashboard'
     | '/admin/login'
     | '/category/$slug'
@@ -197,10 +230,13 @@ export interface FileRouteTypes {
     | '/cart'
     | '/categories'
     | '/checkout'
+    | '/coupons'
+    | '/notifications'
     | '/order'
     | '/profile'
     | '/search'
     | '/slot'
+    | '/wishlist'
     | '/admin/dashboard'
     | '/admin/login'
     | '/category/$slug'
@@ -215,16 +251,26 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CategoriesRoute: typeof CategoriesRoute
   CheckoutRoute: typeof CheckoutRoute
+  CouponsRoute: typeof CouponsRoute
+  NotificationsRoute: typeof NotificationsRoute
   OrderRoute: typeof OrderRoute
   ProfileRoute: typeof ProfileRoute
   SearchRoute: typeof SearchRoute
   SlotRoute: typeof SlotRoute
+  WishlistRoute: typeof WishlistRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ProductIdRoute: typeof ProductIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/slot': {
       id: '/slot'
       path: '/slot'
@@ -251,6 +297,20 @@ declare module '@tanstack/react-router' {
       path: '/order'
       fullPath: '/order'
       preLoaderRoute: typeof OrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coupons': {
+      id: '/coupons'
+      path: '/coupons'
+      fullPath: '/coupons'
+      preLoaderRoute: typeof CouponsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -353,10 +413,13 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CategoriesRoute: CategoriesRoute,
   CheckoutRoute: CheckoutRoute,
+  CouponsRoute: CouponsRoute,
+  NotificationsRoute: NotificationsRoute,
   OrderRoute: OrderRoute,
   ProfileRoute: ProfileRoute,
   SearchRoute: SearchRoute,
   SlotRoute: SlotRoute,
+  WishlistRoute: WishlistRoute,
   CategorySlugRoute: CategorySlugRoute,
   ProductIdRoute: ProductIdRoute,
 }

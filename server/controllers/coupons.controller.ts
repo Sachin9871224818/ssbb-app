@@ -2,6 +2,14 @@ import type { Request, Response } from "express";
 import { prisma } from "../prisma.js";
 import { z } from "zod";
 
+export async function listCoupons(_req: Request, res: Response) {
+  const coupons = await prisma.coupon.findMany({
+    where: { isActive: true },
+    orderBy: { createdAt: "asc" },
+  });
+  res.json({ success: true, data: coupons });
+}
+
 const ApplySchema = z.object({
   code: z.string().min(1).max(40),
   subtotal: z.number().positive(),

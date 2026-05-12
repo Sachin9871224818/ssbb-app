@@ -20,6 +20,7 @@ type State = {
   addresses: Address[];
   selectedAddressId: string | null;
   selectedSlot: SlotId | null;
+  wishlist: Record<string, Product>;
   add: (p: Product) => void;
   remove: (id: string) => void;
   setQty: (id: string, qty: number) => void;
@@ -27,12 +28,14 @@ type State = {
   addAddress: (a: Address) => void;
   selectAddress: (id: string) => void;
   setSlot: (s: SlotId) => void;
+  toggleWishlist: (p: Product) => void;
 };
 
 export const useStore = create<State>()(
   persist(
     (set) => ({
       cart: {},
+      wishlist: {},
       addresses: [
         { id: "a1", label: "Home", line1: "B-12, Rajokri Road", line2: "Near Metro Pillar 14", city: "New Delhi", pincode: "110038" },
       ],
@@ -64,6 +67,12 @@ export const useStore = create<State>()(
       addAddress: (a) => set((s) => ({ addresses: [...s.addresses, a], selectedAddressId: a.id })),
       selectAddress: (id) => set({ selectedAddressId: id }),
       setSlot: (s) => set({ selectedSlot: s }),
+      toggleWishlist: (p) =>
+        set((s) => {
+          const w = { ...s.wishlist };
+          if (w[p.id]) { delete w[p.id]; } else { w[p.id] = p; }
+          return { wishlist: w };
+        }),
     }),
     { name: "ssbb-store" }
   )

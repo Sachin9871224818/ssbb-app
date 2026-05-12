@@ -10,10 +10,10 @@ export const Route = createFileRoute("/profile")({
 
 const items = [
   { icon: ShoppingBag, label: "My orders", to: "/order", sub: "Track and reorder" },
-  { icon: Heart, label: "Wishlist", to: "/", sub: "Saved items" },
+  { icon: Heart, label: "Wishlist", to: "/wishlist", sub: "Saved items" },
   { icon: MapPin, label: "Addresses", to: "/address", sub: "Manage delivery addresses" },
-  { icon: Tag, label: "Offers & coupons", to: "/", sub: "Try BACHAT50 · FIRST100 · SAVE20" },
-  { icon: Bell, label: "Notifications", to: "/", sub: "Order & offer alerts" },
+  { icon: Tag, label: "Offers & coupons", to: "/coupons", sub: "Try BACHAT50 · FIRST100 · SAVE20" },
+  { icon: Bell, label: "Notifications", to: "/notifications", sub: "Order & offer alerts" },
   { icon: HelpCircle, label: "Help & support", to: "/", sub: "Talk to us" },
 ];
 
