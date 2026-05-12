@@ -248,22 +248,14 @@ function Home() {
           <ProductSection title="Daily essentials" subtitle="Stock your pantry" items={essentials} loading={essentialsQuery.isLoading} />
 
           {/* ── Wholesale Banner ── */}
-          <div className="mx-4 mt-6 relative overflow-hidden rounded-[20px] ink-shadow">
+          <Link to="/search" className="mx-4 mt-6 block overflow-hidden rounded-[20px] ink-shadow active:opacity-90 transition-opacity">
             <img
               src="/banner-main.png"
               alt="Sasta Bhi Best Bhi — Bachat Bazaar"
               className="w-full object-cover"
               style={{ aspectRatio: "2.4 / 1" }}
             />
-            <div className="absolute bottom-3 left-4">
-              <Link
-                to="/search"
-                className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-xs font-bold text-primary mustard-shadow"
-              >
-                Shop Now →
-              </Link>
-            </div>
-          </div>
+          </Link>
 
           <ProductSection title="Fresh vegetables" subtitle="Sourced this morning" items={veg} loading={vegQuery.isLoading} />
           <ProductSection title="Wholesale picks" subtitle="Save more on bulk" items={wholesale} loading={wholesaleQuery.isLoading} />
