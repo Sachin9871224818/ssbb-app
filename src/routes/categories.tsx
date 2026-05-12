@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCategories } from "@/hooks/use-api";
 import { TopBar } from "@/components/app/TopBar";
 import { categories as fallbackCategories } from "@/lib/data";
-import { CategoryIconSkeleton } from "@/components/app/Skeleton";
 
 export const Route = createFileRoute("/categories")({
   head: () => ({
@@ -10,6 +9,18 @@ export const Route = createFileRoute("/categories")({
   }),
   component: CategoriesPage,
 });
+
+const CATEGORY_BANNERS: Record<string, string> = {
+  vegetables: "/categories/cat-vegetables.jpg",
+  fruits:     "/categories/cat-fruits.jpg",
+  dairy:      "/categories/cat-dairy.jpg",
+  snacks:     "/categories/cat-snacks.jpg",
+  essentials: "/categories/cat-essentials.jpg",
+  wholesale:  "/categories/cat-wholesale.jpg",
+  household:  "/categories/cat-household.jpg",
+  beauty:     "/categories/cat-beauty.jpg",
+  dryfruits:  "/categories/cat-dryfruits.jpg",
+};
 
 function CategoriesPage() {
   const q = useCategories();
@@ -24,21 +35,38 @@ function CategoriesPage() {
           ? Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="h-28 animate-pulse rounded-2xl bg-muted" />
             ))
-          : cats.map((cat) => (
-              <Link
-                key={cat.slug}
-                to="/category/$slug"
-                params={{ slug: cat.slug }}
-                className="relative flex flex-col justify-between overflow-hidden rounded-2xl p-4 transition-transform active:scale-95"
-                style={{ background: (cat as any).bg ?? "#f5f5f5", minHeight: "110px" }}
-              >
-                <span className="text-4xl leading-none">{(cat as any).emoji ?? "🛒"}</span>
-                <div className="mt-3">
-                  <p className="text-sm font-bold leading-tight">{cat.name}</p>
-                  <p className="mt-0.5 text-[10px] font-semibold opacity-50">Shop now →</p>
-                </div>
-              </Link>
-            ))}
+          : cats.map((cat) => {
+              const banner = CATEGORY_BANNERS[cat.slug];
+              return (
+                <Link
+                  key={cat.slug}
+                  to="/category/$slug"
+                  params={{ slug: cat.slug }}
+                  className="overflow-hidden rounded-2xl transition-transform active:scale-95"
+                >
+                  {banner ? (
+                    <img
+                      src={banner}
+                      alt={cat.name}
+                      className="w-full object-cover"
+                      style={{ height: "110px", objectPosition: "center" }}
+                      draggable={false}
+                    />
+                  ) : (
+                    <div
+                      className="flex flex-col justify-between p-4"
+                      style={{ background: (cat as any).bg ?? "#f5f5f5", height: "110px" }}
+                    >
+                      <span className="text-4xl leading-none">{(cat as any).emoji ?? "🛒"}</span>
+                      <div>
+                        <p className="text-sm font-bold leading-tight">{cat.name}</p>
+                        <p className="mt-0.5 text-[10px] font-semibold opacity-50">Shop now →</p>
+                      </div>
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
       </div>
     </div>
   );
