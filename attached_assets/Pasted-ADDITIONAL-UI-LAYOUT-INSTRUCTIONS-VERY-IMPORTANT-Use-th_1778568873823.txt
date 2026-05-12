@@ -1,0 +1,253 @@
+ADDITIONAL UI LAYOUT INSTRUCTIONS (VERY IMPORTANT)
+
+Use the attached Blinkit screenshots EXACTLY as the structural reference for layout density, tile sizing, spacing, and section hierarchy.
+
+---------------------------------------------------
+HOME SCREEN TILE STRUCTURE
+---------------------------------------------------
+
+Design the homepage like Blinkit’s real app structure.
+
+SECTION ORDER:
+
+1. Sticky Delivery Header
+2. Search Bar
+3. Horizontal Category Icons
+4. Featured Offer Banner Carousel
+5. Frequently Bought Section
+6. “See all products” horizontal CTA
+7. Main Shopping Sections
+8. Floating Cart Button
+9. Bottom Navigation
+
+---------------------------------------------------
+TOP CATEGORY ICON ROW
+---------------------------------------------------
+
+Horizontal scrollable icons.
+
+Tile Style:
+- Small rounded square/circle icons
+- Icon/image on top
+- Text below
+- Compact spacing
+
+Visible Count:
+- 5 to 6 icons visible per row on mobile
+- Smooth horizontal scrolling
+
+Examples:
+- Fruits & Vegetables
+- Dairy & Breakfast
+- Snacks & Munchies
+- Beverages
+- Personal Care
+- Household
+
+---------------------------------------------------
+FEATURED BANNERS
+---------------------------------------------------
+
+Horizontal swipe cards.
+
+Banner Specs:
+- 2.2:1 ratio
+- Rounded 20px corners
+- Premium gradients
+- Full width feel
+- Auto spacing like Blinkit
+
+Visible:
+- 1.2 banner cards visible
+
+---------------------------------------------------
+FREQUENTLY BOUGHT SECTION
+---------------------------------------------------
+
+This section should look EXACTLY like Blinkit.
+
+Layout:
+- 2 cards per row
+- Large rounded cards
+- Each card contains:
+  - Multiple small product thumbnails
+  - Section name
+  - “+4 more” type overlay
+
+Examples:
+- Chips & Namkeen
+- Vegetables & Fruits
+- Dairy Products
+- Sauces & Spreads
+
+Card Specs:
+- Rounded 20px
+- Soft shadow
+- Light pastel background
+- 2-column responsive layout
+
+---------------------------------------------------
+“SEE ALL PRODUCTS” CTA
+---------------------------------------------------
+
+Add a full-width rounded CTA row between sections.
+
+Style:
+- Light background
+- Small overlapping product thumbnails
+- Arrow icon
+- Rounded pill design
+
+---------------------------------------------------
+MAIN CATEGORY GRID SECTIONS
+---------------------------------------------------
+
+Examples:
+- Grocery & Kitchen
+- Snacks & Drinks
+- Beauty & Personal Care
+- Household Essentials
+
+Each section must contain:
+
+- Section title
+- 4-column responsive grid
+- Rounded square image cards
+- Image on top
+- Text below
+- Compact spacing like Blinkit
+
+---------------------------------------------------
+CATEGORY TILE RULES
+---------------------------------------------------
+
+Mobile Layout:
+- EXACTLY 4 tiles per row
+- Equal width
+- Consistent spacing
+- Rounded 16px cards
+
+Desktop/Tablet:
+- Auto responsive scaling
+
+Tile Content:
+- Product/category image
+- Clean label text
+- Center aligned
+
+---------------------------------------------------
+PRODUCT CARD DESIGN
+---------------------------------------------------
+
+Product card structure should follow Blinkit layout:
+
+1. Product image
+2. Small delivery time badge
+3. Product weight/variant
+4. Product title
+5. Rating/review (optional)
+6. Price
+7. Discounted MRP
+8. ADD button
+
+Card Style:
+- Rounded 18px
+- Thin border
+- Compact
+- Premium spacing
+
+Grid:
+- 3 cards visible horizontally in mobile carousel sections
+
+---------------------------------------------------
+FLOATING CART BUTTON
+---------------------------------------------------
+
+Sticky floating cart exactly like Blinkit.
+
+Specs:
+- Green pill background
+- Product thumbnails on left
+- Cart text + item count
+- Arrow button on right
+- Floating above bottom nav
+
+---------------------------------------------------
+BOTTOM NAVIGATION
+---------------------------------------------------
+
+Bottom nav should feel premium.
+
+Tabs:
+- Home
+- Categories
+- Search
+- Cart
+- Profile
+
+Style:
+- Rounded top corners
+- Floating appearance
+- Active tab highlight
+- Soft shadow
+- Proper icon spacing
+
+---------------------------------------------------
+SPACING SYSTEM
+---------------------------------------------------
+
+Use Blinkit-like spacing consistency:
+
+- Section gap: 24px
+- Card gap: 12px
+- Tile padding: 12px
+- Border radius: 16px–20px
+- Horizontal page padding: 16px
+
+---------------------------------------------------
+TYPOGRAPHY
+---------------------------------------------------
+
+Use hierarchy similar to Blinkit:
+
+Heading:
+- Bold
+- Large
+- Tight spacing
+
+Labels:
+- Medium weight
+- Compact
+
+Prices:
+- Bold emphasis
+
+Muted text:
+- Gray tones
+
+---------------------------------------------------
+ANIMATIONS
+---------------------------------------------------
+
+Add subtle:
+- Scale on tap
+- Smooth hover
+- Skeleton loading
+- Swipe feel
+- Smooth transitions
+
+---------------------------------------------------
+IMPORTANT
+---------------------------------------------------
+
+Do NOT redesign randomly.
+
+The attached Blinkit screenshots are the direct layout reference:
+- Tile density
+- Card sizing
+- Section spacing
+- Product layout
+- Floating cart
+- Navigation structure
+
+Maintain the exact visual rhythm and modern grocery-app feel.

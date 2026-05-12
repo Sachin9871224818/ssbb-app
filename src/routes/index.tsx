@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { MapPin, Search, Bell, MessageCircle, ChevronDown } from "lucide-react";
+import { MapPin, Search, Bell, MessageCircle, ChevronDown, ArrowRight } from "lucide-react";
 import { ProductCard } from "@/components/app/ProductCard";
 import { SectionHeader } from "@/components/app/SectionHeader";
 import { useCategories, useBanners, useOffers, useProducts, useBestsellers } from "@/hooks/use-api";
@@ -14,6 +14,24 @@ export const Route = createFileRoute("/")({
   }),
   component: Home,
 });
+
+const FREQ_GROUPS = [
+  { name: "Chips & Namkeen", bg: "#FFF1C9", emojis: ["🍿", "🧂", "🍪"], slug: "snacks" },
+  { name: "Vegetables & Fruits", bg: "#E8F5D6", emojis: ["🍅", "🥬", "🍎", "🧅"], slug: "vegetables" },
+  { name: "Dairy & Eggs", bg: "#F2EAFE", emojis: ["🥛", "🥚", "🧈"], slug: "dairy" },
+  { name: "Dry Fruits & Nuts", bg: "#F1E1C6", emojis: ["🥜", "🌰", "🫘"], slug: "dryfruits" },
+];
+
+const GROCERY_GRID = [
+  { label: "Vegetables & Fruits", emoji: "🥬", bg: "#E8F5D6", slug: "vegetables" },
+  { label: "Atta, Rice & Dal", emoji: "🌾", bg: "#FFE7BD", slug: "essentials" },
+  { label: "Dairy & Eggs", emoji: "🥛", bg: "#F2EAFE", slug: "dairy" },
+  { label: "Dry Fruits", emoji: "🥜", bg: "#F1E1C6", slug: "dryfruits" },
+  { label: "Snacks & Drinks", emoji: "🍿", bg: "#FFF1C9", slug: "snacks" },
+  { label: "Wholesale", emoji: "📦", bg: "#FFD9A8", slug: "wholesale" },
+  { label: "Household", emoji: "🧴", bg: "#DCEEFF", slug: "household" },
+  { label: "Beauty & Care", emoji: "💄", bg: "#FFD9EC", slug: "beauty" },
+];
 
 function Home() {
   const categoriesQuery = useCategories();
@@ -32,20 +50,23 @@ function Home() {
   const veg = vegQuery.data ?? fallbackProducts.filter((p) => p.category === "vegetables");
   const wholesale = wholesaleQuery.data ?? fallbackProducts.filter((p) => p.category === "wholesale");
 
+  const seeAllEmojis = [...offers, ...essentials].slice(0, 5).map((p) => (p as any).emoji ?? "🛒");
+
   return (
-    <div className="flex flex-col">
-      <header className="gradient-ink rounded-b-3xl px-4 pb-5 pt-5 text-secondary-foreground">
-        <div className="flex items-start justify-between">
-          <div className="flex items-start gap-2">
-            <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+    <div className="flex flex-col pb-8">
+      {/* ── 1. Delivery Header ── */}
+      <header className="gradient-ink px-4 pb-4 pt-5 text-secondary-foreground">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
               <MapPin className="h-4 w-4" strokeWidth={2.5} />
             </div>
             <div className="leading-tight">
-              <p className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-primary">
+              <p className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-primary">
                 Delivering to <ChevronDown className="h-3 w-3" />
               </p>
-              <p className="text-sm font-semibold">Rajokri, New Delhi</p>
-              <p className="text-[11px] text-secondary-foreground/60">B-12, near Metro Pillar 14</p>
+              <p className="text-sm font-bold">Rajokri, New Delhi</p>
+              <p className="text-[10px] text-secondary-foreground/50">B-12, near Metro Pillar 14</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -57,63 +78,132 @@ function Home() {
             </button>
           </div>
         </div>
-
-        <Link to="/search" className="mt-4 flex items-center gap-2 rounded-2xl bg-white/10 px-4 py-3 text-sm text-secondary-foreground/70 backdrop-blur">
-          <Search className="h-4 w-4" />
-          Search atta, dal, milk, sabzi…
-        </Link>
-
-        <div className="mt-4 flex items-center justify-between rounded-2xl bg-primary p-3 text-primary-foreground mustard-shadow">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-widest">Shri Shyam Bachat Bazaar</p>
-            <p className="text-lg font-extrabold leading-tight">Sasta Bhi, Best Bhi.</p>
-          </div>
-          <span className="rounded-full bg-secondary px-3 py-1 text-[11px] font-bold text-primary">FREE 299+</span>
-        </div>
       </header>
 
-      {/* Banners */}
-      <div className="-mt-2 flex gap-3 overflow-x-auto px-4 pt-4 no-scrollbar">
-        {banners.map((b) => (
-          <div key={b.id} className="flex min-w-[78%] snap-start flex-col justify-between rounded-2xl p-4 ink-shadow" style={{ background: b.bg ?? undefined, color: b.fg ?? undefined }}>
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-widest opacity-80">Today's special</p>
-              <p className="mt-1 text-lg font-extrabold leading-tight">{b.title}</p>
-              <p className="mt-1 text-[12px] opacity-80">{b.sub}</p>
-            </div>
-            <span className="mt-3 w-fit rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold backdrop-blur">{b.cta} →</span>
-          </div>
-        ))}
+      {/* ── 2. Search Bar ── */}
+      <div className="gradient-ink px-4 pb-4">
+        <Link to="/search" className="flex items-center gap-2.5 rounded-2xl bg-white/10 px-4 py-3 text-sm text-secondary-foreground/70 backdrop-blur transition-opacity active:opacity-70">
+          <Search className="h-4 w-4 flex-shrink-0" />
+          <span>Search atta, dal, milk, sabzi…</span>
+        </Link>
       </div>
 
-      {/* Categories */}
-      <SectionHeader title="Shop by category" subtitle="Everything your kitchen needs" />
-      <div className="grid grid-cols-4 gap-3 px-4">
+      {/* ── 3. Category Horizontal Scroll ── */}
+      <div className="flex gap-3 overflow-x-auto px-4 pb-1 pt-4 no-scrollbar">
         {categories.map((c) => (
-          <Link key={c.slug} to="/category/$slug" params={{ slug: c.slug }} className="flex flex-col items-center gap-1.5">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl text-3xl" style={{ background: c.bg ?? undefined }}>
-              {c.emoji}
+          <Link key={c.slug} to="/category/$slug" params={{ slug: c.slug }} className="flex flex-shrink-0 flex-col items-center gap-1.5">
+            <div
+              className="flex h-[58px] w-[58px] items-center justify-center rounded-2xl text-2xl transition-transform active:scale-95"
+              style={{ background: (c as any).bg ?? "#f5f5f5" }}
+            >
+              {(c as any).emoji}
             </div>
-            <span className="text-center text-[10px] font-semibold leading-tight">{c.name}</span>
+            <span className="w-14 text-center text-[9px] font-semibold leading-tight">{c.name}</span>
           </Link>
         ))}
       </div>
 
-      <Section title="Best offers" subtitle="Handpicked deals just for you" items={offers} />
-      <Section title="⭐ Bestsellers" subtitle="Customers love these" items={bestsellers} />
-      <Section title="Daily essentials" subtitle="Stock your pantry" items={essentials} />
+      {/* ── 4. Banner Carousel ── */}
+      <div className="mt-5 flex gap-3 overflow-x-auto px-4 pb-1 no-scrollbar snap-x snap-mandatory">
+        {banners.map((b) => (
+          <div
+            key={b.id}
+            className="flex min-w-[88%] snap-start flex-col justify-between rounded-[20px] p-4 ink-shadow"
+            style={{ background: (b as any).bg ?? undefined, color: (b as any).fg ?? undefined }}
+          >
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">Today's special</p>
+              <p className="mt-1 text-xl font-extrabold leading-tight">{b.title}</p>
+              <p className="mt-1 text-[11px] opacity-75">{(b as any).sub}</p>
+            </div>
+            <span className="mt-3 w-fit rounded-full bg-white/20 px-3 py-1.5 text-[11px] font-bold backdrop-blur">
+              {(b as any).cta} →
+            </span>
+          </div>
+        ))}
+      </div>
 
-      <div className="mx-4 mt-6 overflow-hidden rounded-3xl bg-secondary p-5 text-secondary-foreground ink-shadow">
-        <p className="text-[11px] font-bold uppercase tracking-widest text-primary">Wholesale Bazaar</p>
-        <p className="mt-1 text-xl font-extrabold leading-tight">Bulk grocery at<br/>shopkeeper prices</p>
-        <p className="mt-1 text-xs text-secondary-foreground/70">Min order ₹2,000 · Free delivery in Rajokri & Mahipalpur</p>
+      {/* ── 5. Frequently Bought ── */}
+      <SectionHeader title="Frequently bought" subtitle="Your kitchen staples" />
+      <div className="grid grid-cols-2 gap-3 px-4">
+        {FREQ_GROUPS.map((g) => (
+          <Link
+            key={g.slug}
+            to="/category/$slug"
+            params={{ slug: g.slug }}
+            className="flex flex-col rounded-[20px] p-3.5 transition-transform active:scale-[0.97]"
+            style={{ background: g.bg }}
+          >
+            <p className="text-[13px] font-bold leading-tight">{g.name}</p>
+            <div className="mt-3 flex gap-1.5">
+              {g.emojis.slice(0, 3).map((e, i) => (
+                <div key={i} className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/60 text-xl">
+                  {e}
+                </div>
+              ))}
+              {g.emojis.length > 3 && (
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black/10 text-[10px] font-bold">
+                  +{g.emojis.length - 3}
+                </div>
+              )}
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* ── 6. See All Products CTA ── */}
+      <Link
+        to="/search"
+        className="mx-4 mt-5 flex items-center gap-3 rounded-2xl bg-muted px-4 py-3 transition-opacity active:opacity-70"
+      >
+        <div className="flex -space-x-2">
+          {seeAllEmojis.map((e, i) => (
+            <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-muted bg-card text-lg">
+              {e}
+            </div>
+          ))}
+        </div>
+        <p className="flex-1 text-sm font-semibold">See all products</p>
+        <ArrowRight className="h-4 w-4 text-muted-foreground" />
+      </Link>
+
+      {/* ── 7. Grocery & Kitchen 4-col grid ── */}
+      <SectionHeader title="Grocery & Kitchen" subtitle="Everything for your home" />
+      <div className="grid grid-cols-4 gap-3 px-4">
+        {GROCERY_GRID.map((item) => (
+          <Link key={item.slug} to="/category/$slug" params={{ slug: item.slug }} className="flex flex-col items-center gap-1.5 transition-transform active:scale-95">
+            <div
+              className="flex h-16 w-full items-center justify-center rounded-2xl text-3xl"
+              style={{ background: item.bg }}
+            >
+              {item.emoji}
+            </div>
+            <span className="text-center text-[9px] font-semibold leading-tight">{item.label}</span>
+          </Link>
+        ))}
+      </div>
+
+      {/* ── 8. Product Carousels ── */}
+      <ProductSection title="Best offers" subtitle="Handpicked deals" items={offers} />
+      {bestsellers.length > 0 && (
+        <ProductSection title="⭐ Bestsellers" subtitle="Customers love these" items={bestsellers} />
+      )}
+      <ProductSection title="Daily essentials" subtitle="Stock your pantry" items={essentials} />
+
+      {/* ── Wholesale Banner ── */}
+      <div className="mx-4 mt-6 overflow-hidden rounded-[20px] bg-secondary p-5 text-secondary-foreground ink-shadow">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Wholesale Bazaar</p>
+        <p className="mt-1 text-xl font-extrabold leading-tight">
+          Bulk grocery at<br />shopkeeper prices
+        </p>
+        <p className="mt-1 text-[11px] text-secondary-foreground/70">Min order ₹2,000 · Free delivery in Rajokri & Mahipalpur</p>
         <Link to="/category/$slug" params={{ slug: "wholesale" }} className="mt-3 inline-flex rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground">
           Shop wholesale →
         </Link>
       </div>
 
-      <Section title="Fresh vegetables" subtitle="Sourced this morning" items={veg} />
-      <Section title="Wholesale picks" subtitle="Save more on bulk" items={wholesale} />
+      <ProductSection title="Fresh vegetables" subtitle="Sourced this morning" items={veg} />
+      <ProductSection title="Wholesale picks" subtitle="Save more on bulk" items={wholesale} />
 
       <p className="mt-10 px-4 pb-4 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
         Powered by SK Digitaltech
@@ -122,14 +212,14 @@ function Home() {
   );
 }
 
-function Section({ title, subtitle, items }: { title: string; subtitle?: string; items: any[] }) {
+function ProductSection({ title, subtitle, items }: { title: string; subtitle?: string; items: any[] }) {
   if (!items || items.length === 0) return null;
   return (
     <>
       <SectionHeader title={title} subtitle={subtitle} />
-      <div className="flex gap-3 overflow-x-auto px-4 pb-1 no-scrollbar">
+      <div className="flex gap-2.5 overflow-x-auto px-4 pb-1 no-scrollbar">
         {items.map((p) => (
-          <div key={p.id} className="w-[150px] flex-shrink-0">
+          <div key={p.id} className="w-[145px] flex-shrink-0">
             <ProductCard product={p} />
           </div>
         ))}
