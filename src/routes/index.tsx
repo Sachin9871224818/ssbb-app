@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { MapPin, Search, Bell, MessageCircle, ChevronDown, ArrowRight } from "lucide-react";
+import { MapPin, Search, Bell, MessageCircle, ChevronDown, ArrowRight, X, Loader2 } from "lucide-react";
+import { useState } from "react";
 import { ProductCard } from "@/components/app/ProductCard";
 import { SectionHeader } from "@/components/app/SectionHeader";
 import {
@@ -7,8 +8,9 @@ import {
   BannerSkeleton,
   FreqCardSkeleton,
   ProductCarouselSkeleton,
+  ProductGridSkeleton,
 } from "@/components/app/Skeleton";
-import { useCategories, useBanners, useOffers, useProducts, useBestsellers } from "@/hooks/use-api";
+import { useCategories, useBanners, useOffers, useProducts, useBestsellers, useProductSearch } from "@/hooks/use-api";
 import { categories as fallbackCategories, banners as fallbackBanners, products as fallbackProducts } from "@/lib/data";
 
 export const Route = createFileRoute("/")({
@@ -40,6 +42,7 @@ const GROCERY_GRID = [
 ];
 
 function Home() {
+  const [q, setQ] = useState("");
   const categoriesQuery = useCategories();
   const bannersQuery = useBanners();
   const offersQuery = useOffers();
@@ -47,6 +50,7 @@ function Home() {
   const essentialsQuery = useProducts({ category: "essentials" });
   const vegQuery = useProducts({ category: "vegetables" });
   const wholesaleQuery = useProducts({ category: "wholesale" });
+  const searchQuery = useProductSearch(q);
 
   const categories = categoriesQuery.data ?? (categoriesQuery.isLoading ? null : fallbackCategories.map((c) => ({ ...c, id: c.slug })));
   const banners = bannersQuery.data ?? (bannersQuery.isLoading ? null : fallbackBanners);
@@ -57,6 +61,7 @@ function Home() {
   const wholesale = wholesaleQuery.data ?? (wholesaleQuery.isLoading ? null : fallbackProducts.filter((p) => p.category === "wholesale"));
 
   const seeAllEmojis = [...(offers ?? []), ...(essentials ?? [])].slice(0, 5).map((p) => (p as any).emoji ?? "🛒");
+  const searchResults = searchQuery.data ?? [];
 
   return (
     <div className="flex flex-col pb-36">
@@ -88,142 +93,180 @@ function Home() {
 
       {/* ── 2. Search Bar ── */}
       <div className="gradient-ink px-4 pb-4">
-        <Link to="/search" className="flex items-center gap-2.5 rounded-2xl bg-white/10 px-4 py-3 text-sm text-secondary-foreground/70 backdrop-blur transition-opacity active:opacity-70">
-          <Search className="h-4 w-4 flex-shrink-0" />
-          <span>Search atta, dal, milk, sabzi…</span>
-        </Link>
+        <div className="flex items-center gap-2.5 rounded-2xl bg-white/10 px-4 py-3 backdrop-blur">
+          <Search className="h-4 w-4 flex-shrink-0 text-secondary-foreground/60" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search atta, dal, milk, sabzi…"
+            className="flex-1 bg-transparent text-sm text-secondary-foreground outline-none placeholder:text-secondary-foreground/60"
+          />
+          {q && !searchQuery.isFetching && (
+            <button onClick={() => setQ("")} className="text-secondary-foreground/60">
+              <X className="h-4 w-4" />
+            </button>
+          )}
+          {searchQuery.isFetching && <Loader2 className="h-4 w-4 animate-spin text-secondary-foreground/60" />}
+        </div>
       </div>
 
-      {/* ── 3. Category Horizontal Scroll ── */}
-      <div className="flex gap-3 overflow-x-auto px-4 pb-1 pt-4 no-scrollbar">
-        {categories
-          ? categories.map((c) => (
-              <Link key={c.slug} to="/category/$slug" params={{ slug: c.slug }} className="flex flex-shrink-0 flex-col items-center gap-1.5">
-                <div
-                  className="flex h-[58px] w-[58px] items-center justify-center rounded-2xl text-2xl transition-transform active:scale-95"
-                  style={{ background: (c as any).bg ?? "#f5f5f5" }}
-                >
-                  {(c as any).emoji}
-                </div>
-                <span className="w-14 text-center text-[9px] font-semibold leading-tight">{c.name}</span>
-              </Link>
-            ))
-          : Array.from({ length: 7 }).map((_, i) => <CategoryIconSkeleton key={i} />)}
-      </div>
+      {/* ── Search Results (shown when query is active) ── */}
+      {q && (
+        <div className="px-4">
+          <p className="mb-3 text-xs text-muted-foreground">
+            {searchQuery.isFetching ? "Searching…" : `${searchResults.length} results for "${q}"`}
+          </p>
+          {searchQuery.isFetching ? (
+            <ProductGridSkeleton count={4} />
+          ) : searchResults.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3">
+              {searchResults.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          ) : (
+            <div className="py-16 text-center text-sm text-muted-foreground">
+              No products found for "{q}".<br />Try a different keyword.
+            </div>
+          )}
+        </div>
+      )}
 
-      {/* ── 4. Banner Carousel ── */}
-      <div className="mt-5 flex gap-3 overflow-x-auto px-4 pb-1 no-scrollbar snap-x snap-mandatory">
-        {banners
-          ? banners.map((b) => (
-              <div
-                key={b.id}
-                className="flex min-w-[88%] snap-start flex-col justify-between rounded-[20px] p-4 ink-shadow"
-                style={{ background: (b as any).bg ?? undefined, color: (b as any).fg ?? undefined }}
-              >
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">Today's special</p>
-                  <p className="mt-1 text-xl font-extrabold leading-tight">{b.title}</p>
-                  <p className="mt-1 text-[11px] opacity-75">{(b as any).sub}</p>
-                </div>
-                <span className="mt-3 w-fit rounded-full bg-white/20 px-3 py-1.5 text-[11px] font-bold backdrop-blur">
-                  {(b as any).cta} →
-                </span>
-              </div>
-            ))
-          : Array.from({ length: 2 }).map((_, i) => <BannerSkeleton key={i} />)}
-      </div>
+      {/* ── Homepage content (hidden while searching) ── */}
+      {!q && (
+        <>
+          {/* ── 3. Category Horizontal Scroll ── */}
+          <div className="flex gap-3 overflow-x-auto px-4 pb-1 pt-4 no-scrollbar">
+            {categories
+              ? categories.map((c) => (
+                  <Link key={c.slug} to="/category/$slug" params={{ slug: c.slug }} className="flex flex-shrink-0 flex-col items-center gap-1.5">
+                    <div
+                      className="flex h-[58px] w-[58px] items-center justify-center rounded-2xl text-2xl transition-transform active:scale-95"
+                      style={{ background: (c as any).bg ?? "#f5f5f5" }}
+                    >
+                      {(c as any).emoji}
+                    </div>
+                    <span className="w-14 text-center text-[9px] font-semibold leading-tight">{c.name}</span>
+                  </Link>
+                ))
+              : Array.from({ length: 7 }).map((_, i) => <CategoryIconSkeleton key={i} />)}
+          </div>
 
-      {/* ── 5. Frequently Bought ── */}
-      <SectionHeader title="Frequently bought" subtitle="Your kitchen staples" />
-      <div className="grid grid-cols-2 gap-3 px-4">
-        {categoriesQuery.isLoading
-          ? Array.from({ length: 4 }).map((_, i) => <FreqCardSkeleton key={i} />)
-          : FREQ_GROUPS.map((g) => (
-              <Link
-                key={g.slug}
-                to="/category/$slug"
-                params={{ slug: g.slug }}
-                className="flex flex-col rounded-[20px] p-3.5 transition-transform active:scale-[0.97]"
-                style={{ background: g.bg }}
-              >
-                <p className="text-[13px] font-bold leading-tight">{g.name}</p>
-                <div className="mt-3 flex gap-1.5">
-                  {g.emojis.slice(0, 3).map((e, i) => (
-                    <div key={i} className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/60 text-xl">
+          {/* ── 4. Banner Carousel ── */}
+          <div className="mt-5 flex gap-3 overflow-x-auto px-4 pb-1 no-scrollbar snap-x snap-mandatory">
+            {banners
+              ? banners.map((b) => (
+                  <div
+                    key={b.id}
+                    className="flex min-w-[88%] snap-start flex-col justify-between rounded-[20px] p-4 ink-shadow"
+                    style={{ background: (b as any).bg ?? undefined, color: (b as any).fg ?? undefined }}
+                  >
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">Today's special</p>
+                      <p className="mt-1 text-xl font-extrabold leading-tight">{b.title}</p>
+                      <p className="mt-1 text-[11px] opacity-75">{(b as any).sub}</p>
+                    </div>
+                    <span className="mt-3 w-fit rounded-full bg-white/20 px-3 py-1.5 text-[11px] font-bold backdrop-blur">
+                      {(b as any).cta} →
+                    </span>
+                  </div>
+                ))
+              : Array.from({ length: 2 }).map((_, i) => <BannerSkeleton key={i} />)}
+          </div>
+
+          {/* ── 5. Frequently Bought ── */}
+          <SectionHeader title="Frequently bought" subtitle="Your kitchen staples" />
+          <div className="grid grid-cols-2 gap-3 px-4">
+            {categoriesQuery.isLoading
+              ? Array.from({ length: 4 }).map((_, i) => <FreqCardSkeleton key={i} />)
+              : FREQ_GROUPS.map((g) => (
+                  <Link
+                    key={g.slug}
+                    to="/category/$slug"
+                    params={{ slug: g.slug }}
+                    className="flex flex-col rounded-[20px] p-3.5 transition-transform active:scale-[0.97]"
+                    style={{ background: g.bg }}
+                  >
+                    <p className="text-[13px] font-bold leading-tight">{g.name}</p>
+                    <div className="mt-3 flex gap-1.5">
+                      {g.emojis.slice(0, 3).map((e, i) => (
+                        <div key={i} className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/60 text-xl">
+                          {e}
+                        </div>
+                      ))}
+                      {g.emojis.length > 3 && (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black/10 text-[10px] font-bold">
+                          +{g.emojis.length - 3}
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+          </div>
+
+          {/* ── 6. See All Products CTA ── */}
+          <button
+            onClick={() => document.querySelector<HTMLInputElement>('input[placeholder*="Search"]')?.focus()}
+            className="mx-4 mt-5 flex items-center gap-3 rounded-2xl bg-muted px-4 py-3 transition-opacity active:opacity-70"
+          >
+            <div className="flex -space-x-2">
+              {seeAllEmojis.length > 0
+                ? seeAllEmojis.map((e, i) => (
+                    <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-muted bg-card text-lg">
                       {e}
                     </div>
+                  ))
+                : Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="h-8 w-8 rounded-full border-2 border-muted bg-muted-foreground/20" />
                   ))}
-                  {g.emojis.length > 3 && (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black/10 text-[10px] font-bold">
-                      +{g.emojis.length - 3}
-                    </div>
-                  )}
+            </div>
+            <p className="flex-1 text-sm font-semibold">See all products</p>
+            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+          </button>
+
+          {/* ── 7. Grocery & Kitchen 4-col grid ── */}
+          <SectionHeader title="Grocery & Kitchen" subtitle="Everything for your home" />
+          <div className="grid grid-cols-4 gap-3 px-4">
+            {GROCERY_GRID.map((item) => (
+              <Link key={item.slug} to="/category/$slug" params={{ slug: item.slug }} className="flex flex-col items-center gap-1.5 transition-transform active:scale-95">
+                <div
+                  className="flex h-16 w-full items-center justify-center rounded-2xl text-3xl"
+                  style={{ background: item.bg }}
+                >
+                  {item.emoji}
                 </div>
+                <span className="text-center text-[9px] font-semibold leading-tight">{item.label}</span>
               </Link>
             ))}
-      </div>
+          </div>
 
-      {/* ── 6. See All Products CTA ── */}
-      <Link
-        to="/search"
-        className="mx-4 mt-5 flex items-center gap-3 rounded-2xl bg-muted px-4 py-3 transition-opacity active:opacity-70"
-      >
-        <div className="flex -space-x-2">
-          {seeAllEmojis.length > 0
-            ? seeAllEmojis.map((e, i) => (
-                <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-muted bg-card text-lg">
-                  {e}
-                </div>
-              ))
-            : Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="h-8 w-8 rounded-full border-2 border-muted bg-muted-foreground/20" />
-              ))}
-        </div>
-        <p className="flex-1 text-sm font-semibold">See all products</p>
-        <ArrowRight className="h-4 w-4 text-muted-foreground" />
-      </Link>
+          {/* ── 8. Product Carousels ── */}
+          <ProductSection title="Best offers" subtitle="Handpicked deals" items={offers} loading={offersQuery.isLoading} />
+          {(bestsellersQuery.data?.length ?? 0) > 0 && (
+            <ProductSection title="⭐ Bestsellers" subtitle="Customers love these" items={bestsellers} loading={bestsellersQuery.isLoading} />
+          )}
+          <ProductSection title="Daily essentials" subtitle="Stock your pantry" items={essentials} loading={essentialsQuery.isLoading} />
 
-      {/* ── 7. Grocery & Kitchen 4-col grid ── */}
-      <SectionHeader title="Grocery & Kitchen" subtitle="Everything for your home" />
-      <div className="grid grid-cols-4 gap-3 px-4">
-        {GROCERY_GRID.map((item) => (
-          <Link key={item.slug} to="/category/$slug" params={{ slug: item.slug }} className="flex flex-col items-center gap-1.5 transition-transform active:scale-95">
-            <div
-              className="flex h-16 w-full items-center justify-center rounded-2xl text-3xl"
-              style={{ background: item.bg }}
-            >
-              {item.emoji}
-            </div>
-            <span className="text-center text-[9px] font-semibold leading-tight">{item.label}</span>
-          </Link>
-        ))}
-      </div>
+          {/* ── Wholesale Banner ── */}
+          <div className="mx-4 mt-6 overflow-hidden rounded-[20px] bg-secondary p-5 text-secondary-foreground ink-shadow">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Wholesale Bazaar</p>
+            <p className="mt-1 text-xl font-extrabold leading-tight">
+              Bulk grocery at<br />shopkeeper prices
+            </p>
+            <p className="mt-1 text-[11px] text-secondary-foreground/70">Min order ₹2,000 · Free delivery in Rajokri & Mahipalpur</p>
+            <Link to="/category/$slug" params={{ slug: "wholesale" }} className="mt-3 inline-flex rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground">
+              Shop wholesale →
+            </Link>
+          </div>
 
-      {/* ── 8. Product Carousels ── */}
-      <ProductSection title="Best offers" subtitle="Handpicked deals" items={offers} loading={offersQuery.isLoading} />
-      {(bestsellersQuery.data?.length ?? 0) > 0 && (
-        <ProductSection title="⭐ Bestsellers" subtitle="Customers love these" items={bestsellers} loading={bestsellersQuery.isLoading} />
+          <ProductSection title="Fresh vegetables" subtitle="Sourced this morning" items={veg} loading={vegQuery.isLoading} />
+          <ProductSection title="Wholesale picks" subtitle="Save more on bulk" items={wholesale} loading={wholesaleQuery.isLoading} />
+
+          <p className="mt-10 px-4 pb-4 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
+            Powered by SK Digitaltech
+          </p>
+        </>
       )}
-      <ProductSection title="Daily essentials" subtitle="Stock your pantry" items={essentials} loading={essentialsQuery.isLoading} />
-
-      {/* ── Wholesale Banner ── */}
-      <div className="mx-4 mt-6 overflow-hidden rounded-[20px] bg-secondary p-5 text-secondary-foreground ink-shadow">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Wholesale Bazaar</p>
-        <p className="mt-1 text-xl font-extrabold leading-tight">
-          Bulk grocery at<br />shopkeeper prices
-        </p>
-        <p className="mt-1 text-[11px] text-secondary-foreground/70">Min order ₹2,000 · Free delivery in Rajokri & Mahipalpur</p>
-        <Link to="/category/$slug" params={{ slug: "wholesale" }} className="mt-3 inline-flex rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground">
-          Shop wholesale →
-        </Link>
-      </div>
-
-      <ProductSection title="Fresh vegetables" subtitle="Sourced this morning" items={veg} loading={vegQuery.isLoading} />
-      <ProductSection title="Wholesale picks" subtitle="Save more on bulk" items={wholesale} loading={wholesaleQuery.isLoading} />
-
-      <p className="mt-10 px-4 pb-4 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
-        Powered by SK Digitaltech
-      </p>
     </div>
   );
 }
