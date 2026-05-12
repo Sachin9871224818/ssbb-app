@@ -9,6 +9,7 @@ export type ApiProduct = {
   mrp: number;
   emoji: string | null;
   bg: string | null;
+  imageUrl: string | null;
   inStock: boolean;
   isBestseller: boolean;
   description: string | null;
@@ -129,6 +130,14 @@ export function useOffers() {
   return useQuery({
     queryKey: ["products", "offers"],
     queryFn: () => api.get("/api/products/offers").then(unwrap<ApiProduct[]>),
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useBestsellers() {
+  return useQuery({
+    queryKey: ["products", "bestsellers"],
+    queryFn: () => api.get("/api/products", { params: { bestseller: "true" } }).then(unwrap<ApiProduct[]>),
     staleTime: 5 * 60 * 1000,
   });
 }

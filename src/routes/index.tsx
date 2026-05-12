@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPin, Search, Bell, MessageCircle, ChevronDown } from "lucide-react";
 import { ProductCard } from "@/components/app/ProductCard";
 import { SectionHeader } from "@/components/app/SectionHeader";
-import { useCategories, useBanners, useOffers, useProducts } from "@/hooks/use-api";
+import { useCategories, useBanners, useOffers, useProducts, useBestsellers } from "@/hooks/use-api";
 import { categories as fallbackCategories, banners as fallbackBanners, products as fallbackProducts } from "@/lib/data";
 
 export const Route = createFileRoute("/")({
@@ -19,6 +19,7 @@ function Home() {
   const categoriesQuery = useCategories();
   const bannersQuery = useBanners();
   const offersQuery = useOffers();
+  const bestsellersQuery = useBestsellers();
   const essentialsQuery = useProducts({ category: "essentials" });
   const vegQuery = useProducts({ category: "vegetables" });
   const wholesaleQuery = useProducts({ category: "wholesale" });
@@ -26,6 +27,7 @@ function Home() {
   const categories = categoriesQuery.data ?? fallbackCategories.map((c) => ({ ...c, id: c.slug }));
   const banners = bannersQuery.data ?? fallbackBanners;
   const offers = offersQuery.data ?? fallbackProducts.filter((p) => p.mrp - p.price >= 30).slice(0, 8);
+  const bestsellers = bestsellersQuery.data ?? [];
   const essentials = essentialsQuery.data ?? fallbackProducts.filter((p) => p.category === "essentials");
   const veg = vegQuery.data ?? fallbackProducts.filter((p) => p.category === "vegetables");
   const wholesale = wholesaleQuery.data ?? fallbackProducts.filter((p) => p.category === "wholesale");
@@ -98,6 +100,7 @@ function Home() {
       </div>
 
       <Section title="Best offers" subtitle="Handpicked deals just for you" items={offers} />
+      <Section title="⭐ Bestsellers" subtitle="Customers love these" items={bestsellers} />
       <Section title="Daily essentials" subtitle="Stock your pantry" items={essentials} />
 
       <div className="mx-4 mt-6 overflow-hidden rounded-3xl bg-secondary p-5 text-secondary-foreground ink-shadow">
