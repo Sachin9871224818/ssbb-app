@@ -154,24 +154,25 @@ function Home() {
 
           {/* ── 4. Banner Carousel ── */}
           <div className="mt-5 flex gap-3 overflow-x-auto px-4 pb-1 no-scrollbar snap-x snap-mandatory">
-            {banners
-              ? banners.map((b) => (
-                  <div
-                    key={b.id}
-                    className="flex min-w-[88%] snap-start flex-col justify-between rounded-[20px] p-4 ink-shadow"
-                    style={{ background: (b as any).bg ?? undefined, color: (b as any).fg ?? undefined }}
-                  >
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">Today's special</p>
-                      <p className="mt-1 text-xl font-extrabold leading-tight">{b.title}</p>
-                      <p className="mt-1 text-[11px] opacity-75">{(b as any).sub}</p>
-                    </div>
-                    <span className="mt-3 w-fit rounded-full bg-white/20 px-3 py-1.5 text-[11px] font-bold backdrop-blur">
-                      {(b as any).cta} →
-                    </span>
-                  </div>
-                ))
-              : Array.from({ length: 2 }).map((_, i) => <BannerSkeleton key={i} />)}
+            {[
+              { img: "/banners/c-1.png", slug: "vegetables", alt: "Vegetables & Fruits" },
+              { img: "/banners/c-2.png", slug: "dairy",      alt: "Dairy & Eggs" },
+              { img: "/banners/c-3.png", slug: "snacks",     alt: "Chips & Namkeen" },
+            ].map((b) => (
+              <Link
+                key={b.slug}
+                to="/category/$slug"
+                params={{ slug: b.slug }}
+                className="flex-shrink-0 min-w-[88%] snap-start rounded-[20px] overflow-hidden ink-shadow active:scale-[0.98] transition-transform"
+              >
+                <img
+                  src={b.img}
+                  alt={b.alt}
+                  className="w-full h-[130px] object-cover object-center"
+                  draggable={false}
+                />
+              </Link>
+            ))}
           </div>
 
           {/* ── 5. Frequently Bought ── */}
