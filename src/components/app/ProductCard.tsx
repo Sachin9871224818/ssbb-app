@@ -15,9 +15,27 @@ export function ProductCard({ product }: { product: Product }) {
       <Link to="/product/$id" params={{ id: product.id }} className="block">
         <div
           className="relative flex h-28 items-center justify-center overflow-hidden rounded-xl"
-          style={{ background: product.bg }}
+          style={{ background: product.imageUrl ? undefined : (product.bg || "#f5f5f5") }}
         >
-          <span className="text-5xl">{product.emoji}</span>
+          {product.imageUrl ? (
+            <img
+              src={product.imageUrl}
+              alt={product.name}
+              className="h-full w-full object-cover"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.style.display = "none";
+                const fallback = target.nextElementSibling as HTMLElement | null;
+                if (fallback) fallback.style.display = "flex";
+              }}
+            />
+          ) : null}
+          <span
+            className="text-5xl"
+            style={{ display: product.imageUrl ? "none" : "block" }}
+          >
+            {product.emoji}
+          </span>
           {discount > 0 && (
             <span className="absolute left-1.5 top-1.5 rounded-md bg-secondary px-1.5 py-0.5 text-[10px] font-bold text-primary">
               {discount}% OFF

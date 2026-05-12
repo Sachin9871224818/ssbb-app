@@ -6,6 +6,7 @@ export type Product = {
   mrp: number;
   emoji: string;
   bg: string;
+  imageUrl?: string | null;
   category: string;
   description?: string;
 };

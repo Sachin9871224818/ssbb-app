@@ -78,8 +78,29 @@ function ProductPage() {
         }
       />
       <div className="px-4">
-        <div className="relative flex h-72 items-center justify-center rounded-3xl" style={{ background: product.bg ?? "#f5f5f5" }}>
-          <span className="text-[140px]">{product.emoji ?? "🛒"}</span>
+        <div
+          className="relative flex h-72 items-center justify-center overflow-hidden rounded-3xl"
+          style={{ background: product.imageUrl ? "#f5f5f5" : (product.bg ?? "#f5f5f5") }}
+        >
+          {product.imageUrl ? (
+            <img
+              src={product.imageUrl}
+              alt={product.name}
+              className="h-full w-full object-contain"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.style.display = "none";
+                const fallback = target.nextElementSibling as HTMLElement | null;
+                if (fallback) fallback.style.display = "flex";
+              }}
+            />
+          ) : null}
+          <span
+            className="text-[140px]"
+            style={{ display: product.imageUrl ? "none" : "block" }}
+          >
+            {product.emoji ?? "🛒"}
+          </span>
           {discount > 0 && (
             <span className="absolute left-4 top-4 rounded-full bg-secondary px-3 py-1 text-xs font-bold text-primary">{discount}% OFF</span>
           )}
