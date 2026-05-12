@@ -77,7 +77,7 @@ function ProductPage() {
           </div>
         }
       />
-      <div className="px-4">
+      <div className="px-4 pb-48">
         <div
           className="relative flex h-72 items-center justify-center overflow-hidden rounded-3xl"
           style={{ background: product.imageUrl ? "#f5f5f5" : (product.bg ?? "#f5f5f5") }}
@@ -150,7 +150,7 @@ function ProductPage() {
         )}
       </div>
 
-      <div className="sticky bottom-24 z-10 mx-4 mb-4 mt-6 flex items-center justify-between gap-3 rounded-2xl bg-secondary p-3 text-secondary-foreground mustard-shadow">
+      <div className="fixed bottom-24 left-1/2 z-10 flex w-full max-w-[480px] -translate-x-1/2 items-center justify-between gap-3 rounded-2xl bg-secondary p-3 text-secondary-foreground mustard-shadow" style={{ paddingLeft: "1rem", paddingRight: "1rem" }}>
         <div className="leading-tight">
           <p className="text-[11px] uppercase tracking-wide text-secondary-foreground/60">Total</p>
           <p className="text-lg font-extrabold">₹{(item?.qty ?? 1) * product.price}</p>
