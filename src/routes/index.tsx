@@ -24,10 +24,15 @@ export const Route = createFileRoute("/")({
 });
 
 const FREQ_GROUPS = [
-  { name: "Chips & Namkeen",    img: "/banners/freq-snacks.jpg",     slug: "snacks" },
-  { name: "Vegetables & Fruits", img: "/banners/freq-vegetables.jpg", slug: "vegetables" },
-  { name: "Dairy & Eggs",        img: "/banners/freq-dairy.jpg",      slug: "dairy" },
-  { name: "Dry Fruits & Nuts",   img: "/banners/freq-dryfruits.jpg",  slug: "dryfruits" },
+  { name: "Fresh Vegetables",  img: "/categories/cat-vegetables.jpg", slug: "vegetables" },
+  { name: "Fresh Fruits",      img: "/categories/cat-fruits.jpg",     slug: "fruits" },
+  { name: "Dairy & Eggs",      img: "/categories/cat-dairy.jpg",      slug: "dairy" },
+  { name: "Snacks & Drinks",   img: "/categories/cat-snacks.jpg",     slug: "snacks" },
+  { name: "Daily Essentials",  img: "/categories/cat-essentials.jpg", slug: "essentials" },
+  { name: "Wholesale Bazaar",  img: "/categories/cat-wholesale.jpg",  slug: "wholesale" },
+  { name: "Household",         img: "/categories/cat-household.jpg",  slug: "household" },
+  { name: "Beauty & Care",     img: "/categories/cat-beauty.jpg",     slug: "beauty" },
+  { name: "Dry Fruits",        img: "/categories/cat-dryfruits.jpg",  slug: "dryfruits" },
 ];
 
 const GROCERY_GRID = [
