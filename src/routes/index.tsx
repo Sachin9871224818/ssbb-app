@@ -187,28 +187,31 @@ function Home() {
             ))}
           </div>
 
-          {/* ── 5. Categories ── */}
-          <SectionHeader title="Categories" subtitle="Shop by category" />
+          {/* ── 5. Frequently Bought ── */}
+          <SectionHeader title="Frequently bought" subtitle="Your kitchen staples" />
           <div className="grid grid-cols-2 gap-3 px-4">
             {categoriesQuery.isLoading
-              ? Array.from({ length: 8 }).map((_, i) => <FreqCardSkeleton key={i} />)
-              : (categories ?? GROCERY_GRID).map((c) => (
+              ? Array.from({ length: 4 }).map((_, i) => <FreqCardSkeleton key={i} />)
+              : FREQ_GROUPS.map((g) => (
                   <Link
-                    key={c.slug}
+                    key={g.slug}
                     to="/category/$slug"
-                    params={{ slug: c.slug }}
-                    className="flex items-center gap-3 rounded-2xl p-3.5 transition-transform active:scale-[0.97]"
-                    style={{ background: (c as any).bg ?? "#f5f5f5" }}
+                    params={{ slug: g.slug }}
+                    className="relative overflow-hidden rounded-[20px] transition-transform active:scale-[0.97]"
                   >
-                    <span className="text-3xl">{(c as any).emoji ?? "🛒"}</span>
-                    <span className="text-sm font-bold leading-tight">{c.name}</span>
+                    <img
+                      src={g.img}
+                      alt={g.name}
+                      className="w-full h-auto block"
+                      draggable={false}
+                    />
                   </Link>
                 ))}
           </div>
 
           {/* ── 6. See All Categories CTA ── */}
           <Link
-            to="/search"
+            to="/categories"
             className="mx-4 mt-5 flex items-center gap-3 rounded-2xl bg-muted px-4 py-3 transition-opacity active:opacity-70"
           >
             <div className="flex -space-x-2">
