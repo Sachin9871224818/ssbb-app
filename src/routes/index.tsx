@@ -188,7 +188,7 @@ function Home() {
           </div>
 
           {/* ── 5. Frequently Bought ── */}
-          <SectionHeader title="Frequently bought" subtitle="Your kitchen staples" />
+          <SectionHeader title="Categories" subtitle="Fresh deals, daily savings" />
           <div className="grid grid-cols-2 gap-3 px-4">
             {categoriesQuery.isLoading
               ? Array.from({ length: 4 }).map((_, i) => <FreqCardSkeleton key={i} />)
