@@ -109,3 +109,7 @@
   .gradient-mustard { background: linear-gradient(135deg, var(--mustard) 0%, var(--mustard-deep) 100%); }
   .gradient-ink { background: linear-gradient(160deg, oklch(0.18 0.02 80) 0%, oklch(0.1 0.02 80) 100%); }
 }
+
+@keyframes shimmer {
+  100% { transform: translateX(200%); }
+}

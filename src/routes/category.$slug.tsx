@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ProductCard } from "@/components/app/ProductCard";
 import { TopBar } from "@/components/app/TopBar";
+import { ProductGridSkeleton } from "@/components/app/Skeleton";
 import { useCategoryProducts } from "@/hooks/use-api";
 import { categories as fallbackCategories, productsByCategory } from "@/lib/data";
-import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/category/$slug")({
   head: ({ params }) => ({
@@ -20,17 +20,19 @@ function CategoryPage() {
   const query = useCategoryProducts(slug);
 
   const cat = query.data ?? ((): any => {
+    if (query.isLoading) return null;
     const fb = fallbackCategories.find((c) => c.slug === slug);
     return fb ? { ...fb, id: fb.slug, products: productsByCategory(slug) } : null;
   })();
 
   if (query.isLoading) {
     return (
-      <div>
-        <TopBar title={slug} />
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-secondary" />
+      <div className="pb-36">
+        <TopBar title="Loading…" />
+        <div className="px-4 pt-2">
+          <div className="h-[82px] animate-pulse rounded-3xl bg-muted" />
         </div>
+        <ProductGridSkeleton count={6} />
       </div>
     );
   }
@@ -51,8 +53,8 @@ function CategoryPage() {
     <div className="pb-36">
       <TopBar title={cat.name} />
       <div className="px-4 pt-2">
-        <div className="flex items-center gap-3 rounded-3xl p-4 ink-shadow" style={{ background: cat.bg ?? undefined }}>
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/60 text-3xl">{cat.emoji}</div>
+        <div className="flex items-center gap-3 rounded-3xl p-4 ink-shadow" style={{ background: (cat as any).bg ?? undefined }}>
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/60 text-3xl">{(cat as any).emoji}</div>
           <div>
             <p className="text-[11px] font-bold uppercase tracking-widest text-secondary/70">Category</p>
             <p className="text-base font-extrabold">{cat.name}</p>

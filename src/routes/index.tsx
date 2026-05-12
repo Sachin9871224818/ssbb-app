@@ -2,6 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { MapPin, Search, Bell, MessageCircle, ChevronDown, ArrowRight } from "lucide-react";
 import { ProductCard } from "@/components/app/ProductCard";
 import { SectionHeader } from "@/components/app/SectionHeader";
+import {
+  CategoryIconSkeleton,
+  BannerSkeleton,
+  FreqCardSkeleton,
+  ProductCarouselSkeleton,
+} from "@/components/app/Skeleton";
 import { useCategories, useBanners, useOffers, useProducts, useBestsellers } from "@/hooks/use-api";
 import { categories as fallbackCategories, banners as fallbackBanners, products as fallbackProducts } from "@/lib/data";
 
@@ -42,15 +48,15 @@ function Home() {
   const vegQuery = useProducts({ category: "vegetables" });
   const wholesaleQuery = useProducts({ category: "wholesale" });
 
-  const categories = categoriesQuery.data ?? fallbackCategories.map((c) => ({ ...c, id: c.slug }));
-  const banners = bannersQuery.data ?? fallbackBanners;
-  const offers = offersQuery.data ?? fallbackProducts.filter((p) => p.mrp - p.price >= 30).slice(0, 8);
+  const categories = categoriesQuery.data ?? (categoriesQuery.isLoading ? null : fallbackCategories.map((c) => ({ ...c, id: c.slug })));
+  const banners = bannersQuery.data ?? (bannersQuery.isLoading ? null : fallbackBanners);
+  const offers = offersQuery.data ?? (offersQuery.isLoading ? null : fallbackProducts.filter((p) => p.mrp - p.price >= 30).slice(0, 8));
   const bestsellers = bestsellersQuery.data ?? [];
-  const essentials = essentialsQuery.data ?? fallbackProducts.filter((p) => p.category === "essentials");
-  const veg = vegQuery.data ?? fallbackProducts.filter((p) => p.category === "vegetables");
-  const wholesale = wholesaleQuery.data ?? fallbackProducts.filter((p) => p.category === "wholesale");
+  const essentials = essentialsQuery.data ?? (essentialsQuery.isLoading ? null : fallbackProducts.filter((p) => p.category === "essentials"));
+  const veg = vegQuery.data ?? (vegQuery.isLoading ? null : fallbackProducts.filter((p) => p.category === "vegetables"));
+  const wholesale = wholesaleQuery.data ?? (wholesaleQuery.isLoading ? null : fallbackProducts.filter((p) => p.category === "wholesale"));
 
-  const seeAllEmojis = [...offers, ...essentials].slice(0, 5).map((p) => (p as any).emoji ?? "🛒");
+  const seeAllEmojis = [...(offers ?? []), ...(essentials ?? [])].slice(0, 5).map((p) => (p as any).emoji ?? "🛒");
 
   return (
     <div className="flex flex-col pb-36">
@@ -90,65 +96,71 @@ function Home() {
 
       {/* ── 3. Category Horizontal Scroll ── */}
       <div className="flex gap-3 overflow-x-auto px-4 pb-1 pt-4 no-scrollbar">
-        {categories.map((c) => (
-          <Link key={c.slug} to="/category/$slug" params={{ slug: c.slug }} className="flex flex-shrink-0 flex-col items-center gap-1.5">
-            <div
-              className="flex h-[58px] w-[58px] items-center justify-center rounded-2xl text-2xl transition-transform active:scale-95"
-              style={{ background: (c as any).bg ?? "#f5f5f5" }}
-            >
-              {(c as any).emoji}
-            </div>
-            <span className="w-14 text-center text-[9px] font-semibold leading-tight">{c.name}</span>
-          </Link>
-        ))}
+        {categories
+          ? categories.map((c) => (
+              <Link key={c.slug} to="/category/$slug" params={{ slug: c.slug }} className="flex flex-shrink-0 flex-col items-center gap-1.5">
+                <div
+                  className="flex h-[58px] w-[58px] items-center justify-center rounded-2xl text-2xl transition-transform active:scale-95"
+                  style={{ background: (c as any).bg ?? "#f5f5f5" }}
+                >
+                  {(c as any).emoji}
+                </div>
+                <span className="w-14 text-center text-[9px] font-semibold leading-tight">{c.name}</span>
+              </Link>
+            ))
+          : Array.from({ length: 7 }).map((_, i) => <CategoryIconSkeleton key={i} />)}
       </div>
 
       {/* ── 4. Banner Carousel ── */}
       <div className="mt-5 flex gap-3 overflow-x-auto px-4 pb-1 no-scrollbar snap-x snap-mandatory">
-        {banners.map((b) => (
-          <div
-            key={b.id}
-            className="flex min-w-[88%] snap-start flex-col justify-between rounded-[20px] p-4 ink-shadow"
-            style={{ background: (b as any).bg ?? undefined, color: (b as any).fg ?? undefined }}
-          >
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">Today's special</p>
-              <p className="mt-1 text-xl font-extrabold leading-tight">{b.title}</p>
-              <p className="mt-1 text-[11px] opacity-75">{(b as any).sub}</p>
-            </div>
-            <span className="mt-3 w-fit rounded-full bg-white/20 px-3 py-1.5 text-[11px] font-bold backdrop-blur">
-              {(b as any).cta} →
-            </span>
-          </div>
-        ))}
+        {banners
+          ? banners.map((b) => (
+              <div
+                key={b.id}
+                className="flex min-w-[88%] snap-start flex-col justify-between rounded-[20px] p-4 ink-shadow"
+                style={{ background: (b as any).bg ?? undefined, color: (b as any).fg ?? undefined }}
+              >
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">Today's special</p>
+                  <p className="mt-1 text-xl font-extrabold leading-tight">{b.title}</p>
+                  <p className="mt-1 text-[11px] opacity-75">{(b as any).sub}</p>
+                </div>
+                <span className="mt-3 w-fit rounded-full bg-white/20 px-3 py-1.5 text-[11px] font-bold backdrop-blur">
+                  {(b as any).cta} →
+                </span>
+              </div>
+            ))
+          : Array.from({ length: 2 }).map((_, i) => <BannerSkeleton key={i} />)}
       </div>
 
       {/* ── 5. Frequently Bought ── */}
       <SectionHeader title="Frequently bought" subtitle="Your kitchen staples" />
       <div className="grid grid-cols-2 gap-3 px-4">
-        {FREQ_GROUPS.map((g) => (
-          <Link
-            key={g.slug}
-            to="/category/$slug"
-            params={{ slug: g.slug }}
-            className="flex flex-col rounded-[20px] p-3.5 transition-transform active:scale-[0.97]"
-            style={{ background: g.bg }}
-          >
-            <p className="text-[13px] font-bold leading-tight">{g.name}</p>
-            <div className="mt-3 flex gap-1.5">
-              {g.emojis.slice(0, 3).map((e, i) => (
-                <div key={i} className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/60 text-xl">
-                  {e}
+        {categoriesQuery.isLoading
+          ? Array.from({ length: 4 }).map((_, i) => <FreqCardSkeleton key={i} />)
+          : FREQ_GROUPS.map((g) => (
+              <Link
+                key={g.slug}
+                to="/category/$slug"
+                params={{ slug: g.slug }}
+                className="flex flex-col rounded-[20px] p-3.5 transition-transform active:scale-[0.97]"
+                style={{ background: g.bg }}
+              >
+                <p className="text-[13px] font-bold leading-tight">{g.name}</p>
+                <div className="mt-3 flex gap-1.5">
+                  {g.emojis.slice(0, 3).map((e, i) => (
+                    <div key={i} className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/60 text-xl">
+                      {e}
+                    </div>
+                  ))}
+                  {g.emojis.length > 3 && (
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black/10 text-[10px] font-bold">
+                      +{g.emojis.length - 3}
+                    </div>
+                  )}
                 </div>
-              ))}
-              {g.emojis.length > 3 && (
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black/10 text-[10px] font-bold">
-                  +{g.emojis.length - 3}
-                </div>
-              )}
-            </div>
-          </Link>
-        ))}
+              </Link>
+            ))}
       </div>
 
       {/* ── 6. See All Products CTA ── */}
@@ -157,11 +169,15 @@ function Home() {
         className="mx-4 mt-5 flex items-center gap-3 rounded-2xl bg-muted px-4 py-3 transition-opacity active:opacity-70"
       >
         <div className="flex -space-x-2">
-          {seeAllEmojis.map((e, i) => (
-            <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-muted bg-card text-lg">
-              {e}
-            </div>
-          ))}
+          {seeAllEmojis.length > 0
+            ? seeAllEmojis.map((e, i) => (
+                <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-muted bg-card text-lg">
+                  {e}
+                </div>
+              ))
+            : Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="h-8 w-8 rounded-full border-2 border-muted bg-muted-foreground/20" />
+              ))}
         </div>
         <p className="flex-1 text-sm font-semibold">See all products</p>
         <ArrowRight className="h-4 w-4 text-muted-foreground" />
@@ -184,11 +200,11 @@ function Home() {
       </div>
 
       {/* ── 8. Product Carousels ── */}
-      <ProductSection title="Best offers" subtitle="Handpicked deals" items={offers} />
-      {bestsellers.length > 0 && (
-        <ProductSection title="⭐ Bestsellers" subtitle="Customers love these" items={bestsellers} />
+      <ProductSection title="Best offers" subtitle="Handpicked deals" items={offers} loading={offersQuery.isLoading} />
+      {(bestsellersQuery.data?.length ?? 0) > 0 && (
+        <ProductSection title="⭐ Bestsellers" subtitle="Customers love these" items={bestsellers} loading={bestsellersQuery.isLoading} />
       )}
-      <ProductSection title="Daily essentials" subtitle="Stock your pantry" items={essentials} />
+      <ProductSection title="Daily essentials" subtitle="Stock your pantry" items={essentials} loading={essentialsQuery.isLoading} />
 
       {/* ── Wholesale Banner ── */}
       <div className="mx-4 mt-6 overflow-hidden rounded-[20px] bg-secondary p-5 text-secondary-foreground ink-shadow">
@@ -202,8 +218,8 @@ function Home() {
         </Link>
       </div>
 
-      <ProductSection title="Fresh vegetables" subtitle="Sourced this morning" items={veg} />
-      <ProductSection title="Wholesale picks" subtitle="Save more on bulk" items={wholesale} />
+      <ProductSection title="Fresh vegetables" subtitle="Sourced this morning" items={veg} loading={vegQuery.isLoading} />
+      <ProductSection title="Wholesale picks" subtitle="Save more on bulk" items={wholesale} loading={wholesaleQuery.isLoading} />
 
       <p className="mt-10 px-4 pb-4 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
         Powered by SK Digitaltech
@@ -212,7 +228,25 @@ function Home() {
   );
 }
 
-function ProductSection({ title, subtitle, items }: { title: string; subtitle?: string; items: any[] }) {
+function ProductSection({
+  title,
+  subtitle,
+  items,
+  loading,
+}: {
+  title: string;
+  subtitle?: string;
+  items: any[] | null;
+  loading?: boolean;
+}) {
+  if (loading) {
+    return (
+      <>
+        <SectionHeader title={title} subtitle={subtitle} />
+        <ProductCarouselSkeleton count={3} />
+      </>
+    );
+  }
   if (!items || items.length === 0) return null;
   return (
     <>
