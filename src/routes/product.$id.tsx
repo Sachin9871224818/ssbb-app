@@ -24,6 +24,8 @@ function ProductPage() {
   const cart = useStore((s) => s.cart);
   const add = useStore((s) => s.add);
   const setQty = useStore((s) => s.setQty);
+  const wishlist = useStore((s) => s.wishlist);
+  const toggleWishlist = useStore((s) => s.toggleWishlist);
 
   const categorySlug = product?.category?.slug ?? product?.categoryId ?? "";
   const relatedQuery = useProducts(categorySlug ? { category: categorySlug } : undefined);
@@ -73,7 +75,16 @@ function ProductPage() {
         right={
           <div className="flex gap-2">
             <button onClick={share} className="flex h-10 w-10 items-center justify-center rounded-full bg-card ink-shadow"><Share2 className="h-4 w-4" /></button>
-            <button className="flex h-10 w-10 items-center justify-center rounded-full bg-card ink-shadow"><Heart className="h-4 w-4" /></button>
+            <button
+              onClick={() => {
+                if (!product) return;
+                toggleWishlist(cartProduct);
+                toast.success(wishlist[product.id] ? "Removed from wishlist" : "Added to wishlist");
+              }}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-card ink-shadow"
+            >
+              <Heart className={`h-4 w-4 transition-colors ${product && wishlist[product.id] ? "fill-destructive text-destructive" : ""}`} />
+            </button>
           </div>
         }
       />
