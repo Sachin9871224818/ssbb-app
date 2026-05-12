@@ -152,26 +152,24 @@ function Home() {
               : Array.from({ length: 7 }).map((_, i) => <CategoryIconSkeleton key={i} />)}
           </div>
 
-          {/* ── 4. Banner Carousel ── */}
-          <div className="mt-5 flex gap-3 overflow-x-auto px-4 pb-1 no-scrollbar snap-x snap-mandatory">
-            {banners
-              ? banners.map((b) => (
-                  <div
-                    key={b.id}
-                    className="flex min-w-[88%] snap-start flex-col justify-between rounded-[20px] p-4 ink-shadow"
-                    style={{ background: (b as any).bg ?? undefined, color: (b as any).fg ?? undefined }}
-                  >
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">Today's special</p>
-                      <p className="mt-1 text-xl font-extrabold leading-tight">{b.title}</p>
-                      <p className="mt-1 text-[11px] opacity-75">{(b as any).sub}</p>
-                    </div>
-                    <span className="mt-3 w-fit rounded-full bg-white/20 px-3 py-1.5 text-[11px] font-bold backdrop-blur">
-                      {(b as any).cta} →
-                    </span>
-                  </div>
-                ))
-              : Array.from({ length: 2 }).map((_, i) => <BannerSkeleton key={i} />)}
+          {/* ── 4. Banner ── */}
+          <div className="mt-5 px-4">
+            <div className="relative overflow-hidden rounded-[20px] ink-shadow">
+              <img
+                src="/banner-main.png"
+                alt="Sasta Bhi Best Bhi — Bachat Bazaar"
+                className="w-full object-cover"
+                style={{ aspectRatio: "2.4 / 1" }}
+              />
+              <div className="absolute bottom-3 left-4">
+                <Link
+                  to="/search"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-xs font-bold text-primary mustard-shadow"
+                >
+                  Shop Now →
+                </Link>
+              </div>
+            </div>
           </div>
 
           {/* ── 5. Frequently Bought ── */}
