@@ -48,8 +48,7 @@ function CategoriesPage() {
                     <img
                       src={banner}
                       alt={cat.name}
-                      className="w-full object-cover"
-                      style={{ height: "110px", objectPosition: "center" }}
+                      className="w-full h-auto block"
                       draggable={false}
                     />
                   ) : (
