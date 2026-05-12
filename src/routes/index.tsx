@@ -250,7 +250,7 @@ function Home() {
           {/* ── Wholesale Banner ── */}
           <Link to="/search" className="mx-4 mt-6 block overflow-hidden rounded-[20px] ink-shadow active:opacity-90 transition-opacity">
             <img
-              src="/banner-main.png"
+              src="/banner-main.png?v=2"
               alt="Sasta Bhi Best Bhi — Bachat Bazaar"
               className="w-full object-cover"
               style={{ aspectRatio: "2.4 / 1" }}
