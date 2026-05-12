@@ -14,7 +14,7 @@ function SlotPage() {
   const setSlot = useStore((s) => s.setSlot);
 
   return (
-    <div>
+    <div className="pb-4">
       <TopBar title="Delivery slot" />
       <div className="px-4">
         <div className="rounded-3xl bg-secondary p-5 text-secondary-foreground">
@@ -63,7 +63,7 @@ function SlotPage() {
         </div>
       </div>
 
-      <div className="sticky bottom-24 mx-4 mt-6">
+      <div className="mx-4 mt-6">
         {selected ? (
           <Link to="/checkout" className="block rounded-2xl bg-secondary py-3.5 text-center text-sm font-bold text-secondary-foreground mustard-shadow">
             Continue to payment →
@@ -73,6 +73,7 @@ function SlotPage() {
             Select a slot to continue
           </button>
         )}
+        <div className="h-36" />
       </div>
     </div>
   );
