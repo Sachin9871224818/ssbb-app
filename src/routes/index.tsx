@@ -190,7 +190,7 @@ function Home() {
                     <img
                       src={g.img}
                       alt={g.name}
-                      className="h-[110px] w-full object-cover object-center"
+                      className="h-[110px] w-full object-cover object-left"
                       draggable={false}
                     />
                   </Link>
