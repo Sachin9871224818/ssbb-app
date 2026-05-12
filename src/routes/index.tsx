@@ -24,10 +24,10 @@ export const Route = createFileRoute("/")({
 });
 
 const FREQ_GROUPS = [
-  { name: "Chips & Namkeen", bg: "#FFF1C9", emojis: ["🍿", "🧂", "🍪"], slug: "snacks" },
-  { name: "Vegetables & Fruits", bg: "#E8F5D6", emojis: ["🍅", "🥬", "🍎", "🧅"], slug: "vegetables" },
-  { name: "Dairy & Eggs", bg: "#F2EAFE", emojis: ["🥛", "🥚", "🧈"], slug: "dairy" },
-  { name: "Dry Fruits & Nuts", bg: "#F1E1C6", emojis: ["🥜", "🌰", "🫘"], slug: "dryfruits" },
+  { name: "Chips & Namkeen",    img: "/banners/freq-snacks.jpg",     slug: "snacks" },
+  { name: "Vegetables & Fruits", img: "/banners/freq-vegetables.jpg", slug: "vegetables" },
+  { name: "Dairy & Eggs",        img: "/banners/freq-dairy.jpg",      slug: "dairy" },
+  { name: "Dry Fruits & Nuts",   img: "/banners/freq-dryfruits.jpg",  slug: "dryfruits" },
 ];
 
 const GROCERY_GRID = [
@@ -185,22 +185,14 @@ function Home() {
                     key={g.slug}
                     to="/category/$slug"
                     params={{ slug: g.slug }}
-                    className="flex flex-col rounded-[20px] p-3.5 transition-transform active:scale-[0.97]"
-                    style={{ background: g.bg }}
+                    className="relative overflow-hidden rounded-[20px] transition-transform active:scale-[0.97]"
                   >
-                    <p className="text-[13px] font-bold leading-tight">{g.name}</p>
-                    <div className="mt-3 flex gap-1.5">
-                      {g.emojis.slice(0, 3).map((e, i) => (
-                        <div key={i} className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/60 text-xl">
-                          {e}
-                        </div>
-                      ))}
-                      {g.emojis.length > 3 && (
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black/10 text-[10px] font-bold">
-                          +{g.emojis.length - 3}
-                        </div>
-                      )}
-                    </div>
+                    <img
+                      src={g.img}
+                      alt={g.name}
+                      className="h-[110px] w-full object-cover object-center"
+                      draggable={false}
+                    />
                   </Link>
                 ))}
           </div>
