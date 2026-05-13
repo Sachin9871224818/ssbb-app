@@ -31,14 +31,14 @@ const FREQ_GROUPS = [
 ];
 
 const GROCERY_GRID = [
-  { label: "Atta",   emoji: "🌾", bg: "#FFF8E1", slug: "atta" },
-  { label: "Rice",   emoji: "🍚", bg: "#F1F8E9", slug: "rice" },
-  { label: "Dal",    emoji: "🫘", bg: "#FFF3E0", slug: "dal" },
-  { label: "Oil",    emoji: "🫙", bg: "#FFFDE7", slug: "oil" },
-  { label: "Dairy",  emoji: "🥛", bg: "#F2EAFE", slug: "dairy" },
-  { label: "Eggs",   emoji: "🥚", bg: "#FFF9C4", slug: "eggs" },
-  { label: "Tea",    emoji: "🍵", bg: "#E8F5E9", slug: "tea" },
-  { label: "Sugar",  emoji: "🧂", bg: "#F3E5F5", slug: "sugar" },
+  { label: "Atta",   emoji: "🌾", bg: "#FFF8E1", slug: "atta",  img: "/grocery/atta.jpg" },
+  { label: "Rice",   emoji: "🍚", bg: "#F1F8E9", slug: "rice",  img: "/grocery/rice.jpg" },
+  { label: "Dal",    emoji: "🫘", bg: "#FFF3E0", slug: "dal",   img: "/grocery/dal.jpg" },
+  { label: "Oil",    emoji: "🫙", bg: "#FFFDE7", slug: "oil",   img: "/grocery/oil.jpg" },
+  { label: "Dairy",  emoji: "🥛", bg: "#F2EAFE", slug: "dairy", img: "/grocery/dairy.jpg" },
+  { label: "Eggs",   emoji: "🥚", bg: "#FFF9C4", slug: "eggs",  img: "/grocery/eggs.jpg" },
+  { label: "Tea",    emoji: "🍵", bg: "#E8F5E9", slug: "tea",   img: "/grocery/tea.jpg" },
+  { label: "Sugar",  emoji: "🧂", bg: "#F3E5F5", slug: "sugar", img: "/grocery/sugar.jpg" },
 ];
 
 function Home() {
@@ -231,10 +231,20 @@ function Home() {
             {GROCERY_GRID.map((item) => (
               <Link key={item.slug} to="/category/$slug" params={{ slug: item.slug }} className="flex flex-col items-center gap-1.5 transition-transform active:scale-95">
                 <div
-                  className="flex h-16 w-full items-center justify-center rounded-2xl text-3xl"
+                  className="flex h-16 w-full items-center justify-center overflow-hidden rounded-2xl"
                   style={{ background: item.bg }}
                 >
-                  {item.emoji}
+                  <img
+                    src={(item as any).img}
+                    alt={item.label}
+                    className="h-full w-full object-contain p-1"
+                    draggable={false}
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = "none";
+                      (e.currentTarget.parentElement as HTMLElement).classList.add("text-3xl");
+                      (e.currentTarget.parentElement as HTMLElement).textContent = item.emoji;
+                    }}
+                  />
                 </div>
                 <span className="text-center text-[9px] font-semibold leading-tight">{item.label}</span>
               </Link>
