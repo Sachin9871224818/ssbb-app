@@ -31,14 +31,14 @@ const FREQ_GROUPS = [
 ];
 
 const GROCERY_GRID = [
-  { label: "Vegetables & Fruits", emoji: "🥬", bg: "#E8F5D6", slug: "vegetables" },
-  { label: "Atta, Rice & Dal", emoji: "🌾", bg: "#FFE7BD", slug: "essentials" },
-  { label: "Dairy & Eggs", emoji: "🥛", bg: "#F2EAFE", slug: "dairy" },
-  { label: "Dry Fruits", emoji: "🥜", bg: "#F1E1C6", slug: "dryfruits" },
-  { label: "Snacks & Drinks", emoji: "🍿", bg: "#FFF1C9", slug: "snacks" },
-  { label: "Wholesale", emoji: "📦", bg: "#FFD9A8", slug: "wholesale" },
-  { label: "Household", emoji: "🧴", bg: "#DCEEFF", slug: "household" },
-  { label: "Beauty & Care", emoji: "💄", bg: "#FFD9EC", slug: "beauty" },
+  { label: "Atta",   emoji: "🌾", bg: "#FFF8E1", slug: "atta" },
+  { label: "Rice",   emoji: "🍚", bg: "#F1F8E9", slug: "rice" },
+  { label: "Dal",    emoji: "🫘", bg: "#FFF3E0", slug: "dal" },
+  { label: "Oil",    emoji: "🫙", bg: "#FFFDE7", slug: "oil" },
+  { label: "Dairy",  emoji: "🥛", bg: "#F2EAFE", slug: "dairy" },
+  { label: "Eggs",   emoji: "🥚", bg: "#FFF9C4", slug: "eggs" },
+  { label: "Tea",    emoji: "🍵", bg: "#E8F5E9", slug: "tea" },
+  { label: "Sugar",  emoji: "🧂", bg: "#F3E5F5", slug: "sugar" },
 ];
 
 function Home() {
